@@ -7,8 +7,6 @@
 
 **BookKaroo** is a BookMyShow-style ticket booking platform for the Indian market — movies, live events, plays, sports (including IPL), comedy shows, and activities across 25 seed cities. It ships an end-user booking flow, an admin panel, and a partner/venue portal with an event-submission workflow (LYS).
 
-> 🚧 This is an actively developed MVP, not a finished product. See [docs/STATUS.md](docs/STATUS.md) for exactly what's built, partial, or pending.
-
 ---
 
 ## 🏗️ Architecture Overview
@@ -116,7 +114,7 @@ BookKaroo/
 
 ### 1. Clone
 ```bash
-git clone https://github.com/<your-org>/BookKaroo.git
+git clone https://github.com/prakashinfotech/BookKaroo.git
 cd BookKaroo
 ```
 
@@ -181,7 +179,7 @@ git checkout -b feat/<scope>
 
 | Doc | Purpose |
 |---|---|
-| [PRD.md](docs/PRD.md) | Product requirements (Phase 1 + 2) |
+| [PRD.md](docs/PRD.md) | Product requirements |
 | [ARCHITECTURE.md](docs/ARCHITECTURE.md) | System design, diagrams, deployment, full env var reference |
 | [DATABASE.md](docs/DATABASE.md) | Schema + ERD + indexes |
 | [API.md](docs/API.md) | REST endpoint contracts |
@@ -198,8 +196,5 @@ The seed migrations in [`backend/database/migrations/`](backend/database/migrati
 
 ---
 
-## 📌 Project Status
-🚧 **Phase 1 (MVP)** — in active development. See [docs/STATUS.md](docs/STATUS.md) for the full, honest breakdown of what's complete, partial, or not started yet.
-
-## 📄 License
-Proprietary — All rights reserved.
+## 📄 Repository Use
+This repository is maintained by Prakash Infotech as a project showcase. Add an approved LICENSE file before distributing or reusing the source under a public software license.
