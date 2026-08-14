@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TicketVerse — Mirage Protocol</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/tv.css" />
+<style>
+.backdrop {
+  position: relative; height: 520px;
+  background:
+    repeating-linear-gradient(135deg, rgba(255,255,255,0.04) 0 2px, transparent 2px 18px),
+    radial-gradient(70% 80% at 60% 30%, rgba(168,85,247,0.55), transparent 60%),
+    radial-gradient(50% 50% at 20% 80%, rgba(225, 29, 116,0.4), transparent 60%),
+    linear-gradient(135deg, #1a0e2e 0%, #0a0e1a 70%);
+  overflow: hidden;
+}
+.backdrop::after {
+  content:''; position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 30%, var(--bg-1) 100%);
+}
+.backdrop-label {
+  position: absolute; top: 32px; left: 32px;
+  font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.16em; color: rgba(255,255,255,0.5);
+}
+.play-fab {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: 80px; height: 80px; border-radius: 999px;
+  background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+  display: grid; place-items: center; color: white;
+  cursor: pointer; transition: transform .2s, background .2s;
+}
+.play-fab:hover { transform: translate(-50%, -50%) scale(1.06); background: rgba(225, 29, 116,0.6); }
+.play-fab svg { width: 28px; height: 28px; margin-left: 4px; }
+
+.detail-shell {
+  margin-top: -180px; position: relative; z-index: 2;
+  display: grid; grid-template-columns: 280px 1fr; gap: 40px;
+  padding-bottom: 64px;
+}
+@media (max-width: 900px) { .detail-shell { grid-template-columns: 1fr; margin-top: -120px; gap: 24px; } }
+
+.poster-block .poster { width: 100%; aspect-ratio: 2/3; border-radius: var(--r-4); box-shadow: var(--sh-3); border: 1px solid rgba(255,255,255,0.12); }
+.poster-block .poster .rank { font-size: 32px; top: auto; bottom: 16px; left: 16px; right: 16px; line-height: 1; }
+
+.detail-main { padding-top: 60px; }
+@media (max-width: 900px) { .detail-main { padding-top: 0; } }
+.detail-main h1 { font-family: var(--f-display); font-size: clamp(40px, 5vw, 64px); font-weight: 600; letter-spacing: -0.025em; margin: 0; line-height: 1; }
+.detail-main h1 em { font-style: italic; background: var(--grad-violet); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.detail-tag { font-family: var(--f-display); font-style: italic; color: var(--text-2); font-size: 18px; margin: 14px 0 0; max-width: 600px; }
+.detail-meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0; }
+.detail-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+
+.fact-bar {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+  margin: 32px 0 0; padding: 22px; border-radius: var(--r-3);
+  background: var(--surface); border: 1px solid var(--border);
+}
+.fact .lbl { font-size: 11px; color: var(--text-3); letter-spacing: 0.12em; text-transform: uppercase; }
+.fact .val { font-size: 16px; font-weight: 600; margin-top: 6px; color: var(--text-1); }
+@media (max-width: 700px) { .fact-bar { grid-template-columns: 1fr 1fr; } }
+
+.section-h { font-family: var(--f-display); font-size: 28px; font-weight: 600; margin: 56px 0 18px; letter-spacing: -0.02em; }
+
+.synopsis { font-size: 17px; line-height: 1.65; color: var(--text-2); max-width: 780px; }
+
+.cast-rail {
+  display: grid; grid-auto-flow: column; grid-auto-columns: 140px;
+  gap: 16px; overflow-x: auto; padding-bottom: 8px;
+}
+.cast-card { text-align: center; }
+.cast-portrait {
+  aspect-ratio: 1; border-radius: 999px; margin-bottom: 10px;
+  background: linear-gradient(135deg, #2a1a3d, #4c1d95);
+  border: 1px solid rgba(255,255,255,0.08);
+  position: relative; overflow: hidden;
+}
+.cast-portrait::after { content:''; position: absolute; inset:0; background: repeating-linear-gradient(135deg, rgba(255,255,255,0.05) 0 2px, transparent 2px 14px); }
+.cast-card:nth-child(2n) .cast-portrait { background: linear-gradient(135deg, #3a0a14, #7f1d1d); }
+.cast-card:nth-child(3n) .cast-portrait { background: linear-gradient(135deg, #0a2a3a, #155e75); }
+.cast-card:nth-child(5n) .cast-portrait { background: linear-gradient(135deg, #2a2a0a, #713f12); }
+.cast-card .nm { font-weight: 600; font-size: 13px; }
+.cast-card .ro { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+
+.review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 800px) { .review-grid { grid-template-columns: 1fr; } }
+.review {
+  padding: 22px; border-radius: var(--r-3);
+  background: var(--surface); border: 1px solid var(--border);
+}
+.review .who { font-size: 13px; color: var(--text-3); }
+.review .score { font-family: var(--f-display); font-size: 36px; font-weight: 600; line-height: 1; }
+.review .line { margin-top: 12px; color: var(--text-1); font-size: 15px; line-height: 1.5; }
+.review .row { margin-bottom: 4px; }
+
+.audience-meter { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; margin-top: 24px; }
+.meter { padding: 20px; border-radius: var(--r-3); background: var(--surface); border: 1px solid var(--border); }
+.meter .num { font-family: var(--f-display); font-size: 38px; font-weight: 600; line-height: 1; }
+.meter .lbl { font-size: 12px; color: var(--text-3); margin-top: 6px; }
+.bar { height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; margin-top: 12px; }
+.bar i { display: block; height: 100%; background: var(--grad-violet); border-radius: 3px; }
+
+/* sticky CTA */
+.sticky-cta {
+  position: sticky; bottom: 16px; z-index: 30; margin: 32px 0 0;
+  display: flex; align-items: center; gap: 16px;
+  padding: 14px 18px; border-radius: var(--r-pill);
+  background: color-mix(in oklab, var(--bg-2) 80%, transparent);
+  backdrop-filter: blur(20px); border: 1px solid var(--border-2);
+  box-shadow: var(--sh-3);
+}
+.sticky-cta .price { font-family: var(--f-display); font-size: 22px; font-weight: 600; }
+.sticky-cta .lbl { font-size: 11px; color: var(--text-3); letter-spacing: 0.1em; text-transform: uppercase; }
+.sticky-cta .grow { display: flex; flex-direction: column; }
+@media (max-width: 600px) { .sticky-cta { padding: 12px 14px; } .sticky-cta .price { font-size: 18px; } }
+
+/* trailer modal placeholder */
+.trailer {
+  aspect-ratio: 16/9; margin-top: 14px; border-radius: var(--r-3);
+  position: relative; overflow: hidden;
+  background: linear-gradient(135deg, #1a0e2e, #0a0e1a);
+}
+.trailer .stripes { position: absolute; inset:0; background-image: repeating-linear-gradient(135deg, rgba(255,255,255,0.04) 0 2px, transparent 2px 14px); }
+.trailer .ph-label { position: absolute; bottom: 14px; left: 16px; font-family: var(--f-mono); font-size: 11px; color: var(--text-3); letter-spacing: 0.1em; }
+
+.tag-tabs { display: flex; gap: 4px; padding: 4px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-pill); width: fit-content; margin-bottom: 18px; }
+.tag-tabs button { padding: 7px 16px; border-radius: var(--r-pill); font-size: 13px; color: var(--text-3); font-weight: 500; }
+.tag-tabs button.on { background: var(--bg-3); color: var(--text-1); box-shadow: var(--sh-1); }
+
+</style>
+</head>
+<body data-screen-label="Movie Detail">
+<script src="assets/icons.js"></script>
+<script src="assets/data.js"></script>
+<script>TVTheme.init();</script>
+<div id="nav"></div>
+<script>document.getElementById('nav').innerHTML = TVNav('movies');</script>
+
+<div class="backdrop">
+  <span class="backdrop-label">[ BACKDROP · MIRAGE PROTOCOL · 2400×900 ]</span>
+  <button class="play-fab" aria-label="Play trailer">▶</button>
+</div>
+
+<main class="container">
+  <div class="detail-shell">
+    <aside class="poster-block">
+      <div class="poster t-7">
+        <div class="stripes"></div>
+        <span class="chip chip-amber" style="position:absolute;top:12px;right:12px;backdrop-filter:blur(8px)">⭐ 8.7 / 10</span>
+        <div class="rank">Mirage Protocol</div>
+        <div class="label">[ POSTER · MIRAGE ]</div>
+      </div>
+      <div style="display:grid;gap:8px;margin-top:14px">
+        <button class="btn btn-ghost"><span>♡</span> Add to Watchlist</button>
+        <button class="btn btn-ghost"><span>↗</span> Share</button>
+      </div>
+    </aside>
+
+    <section class="detail-main">
+      <span class="eyebrow">Now Showing · UA · 2h 28m</span>
+      <h1>Mirage <em>Protocol</em></h1>
+      <p class="detail-tag">"Reality is a heist worth pulling."</p>
+
+      <div class="detail-meta">
+        <span class="chip chip-violet">IMAX 3D</span>
+        <span class="chip chip-cyan">Dolby Atmos</span>
+        <span class="chip">English</span>
+        <span class="chip">Tamil</span>
+        <span class="chip">Hindi (dub)</span>
+        <span class="chip">Sci-Fi · Thriller</span>
+      </div>
+
+      <div class="detail-cta">
+        <a class="btn btn-primary btn-lg" href="showtimes.html">Book tickets</a>
+        <button class="btn btn-ghost btn-lg" id="trailerBtn">▶ Watch trailer</button>
+        <button class="btn btn-ghost btn-lg">Set release reminder</button>
+      </div>
+
+      <div class="fact-bar">
+        <div class="fact"><div class="lbl">Director</div><div class="val">Tomás Rao</div></div>
+        <div class="fact"><div class="lbl">Released</div><div class="val">Apr 25, 2026</div></div>
+        <div class="fact"><div class="lbl">Runtime</div><div class="val">2h 28m</div></div>
+        <div class="fact"><div class="lbl">Certificate</div><div class="val">UA · 13+</div></div>
+      </div>
+
+      <h2 class="section-h">Storyline</h2>
+      <p class="synopsis">In a near-future where memory can be edited, a disgraced cognitive engineer is hired by a billionaire to steal back the one night that was erased from his life. What begins as a clinical extraction unravels into a four-city chase through neon-soaked alleys, encrypted dreams, and the question we've all been afraid to ask: what if the heist <em>is</em> the memory?</p>
+
+      <div class="row" style="margin-top:18px;gap:8px;flex-wrap:wrap">
+        <span class="chip">Heist</span>
+        <span class="chip">Mind-bending</span>
+        <span class="chip">Visual spectacle</span>
+        <span class="chip">Slow-burn</span>
+      </div>
+
+      <div class="trailer" style="margin-top:32px">
+        <div class="stripes"></div>
+        <button class="play-fab" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)">▶</button>
+        <span class="ph-label">[ TRAILER · 16:9 · 2:34 ]</span>
+      </div>
+
+      <h2 class="section-h">Cast &amp; Crew</h2>
+      <div class="cast-rail">
+        <div class="cast-card"><div class="cast-portrait"></div><div class="nm">Aria Vance</div><div class="ro">as Sona Iyer</div></div>
+        <div class="cast-card"><div class="cast-portrait"></div><div class="nm">Kabir Anand</div><div class="ro">as The Engineer</div></div>
+        <div class="cast-card"><div class="cast-portrait"></div><div class="nm">Mira Shroff</div><div class="ro">as Dr. Hale</div></div>
+        <div class="cast-card"><div class="cast-portrait"></div><div class="nm">D. Ray</div><div class="ro">as Vorne</div></div>
+        <div class="cast-card"><div class="cast-portrait"></div><div class="nm">Sana Iyer</div><div class="ro">as Mira</div></div>
+        <div class="cast-card"><div class="cast-portrait"></div><div class="nm">Tomás Rao</div><div class="ro">Director</div></div>
+        <div class="cast-card"><div class="cast-portrait"></div><div class="nm">Lin Hao</div><div class="ro">Composer</div></div>
+        <div class="cast-card"><div class="cast-portrait"></div><div class="nm">N. Kapoor</div><div class="ro">DOP</div></div>
+      </div>
+
+      <h2 class="section-h">Audience &amp; Critics</h2>
+      <div class="tag-tabs">
+        <button class="on">All reviews</button>
+        <button>Critics</button>
+        <button>Verified buyers</button>
+      </div>
+
+      <div class="audience-meter">
+        <div class="meter">
+          <div class="num">8.7</div>
+          <div class="lbl">★ TicketVerse score · 24K ratings</div>
+          <div class="bar"><i style="width:87%"></i></div>
+        </div>
+        <div class="meter">
+          <div class="num">94%</div>
+          <div class="lbl">Critics liked it · 38 reviews</div>
+          <div class="bar"><i style="width:94%;background:linear-gradient(90deg,#34D399,#22D3EE)"></i></div>
+        </div>
+        <div class="meter">
+          <div class="num">91%</div>
+          <div class="lbl">Audience score · 12K verified</div>
+          <div class="bar"><i style="width:91%;background:linear-gradient(90deg,#FBBF24,#E11D74)"></i></div>
+        </div>
+      </div>
+
+      <div class="review-grid" style="margin-top:18px">
+        <div class="review">
+          <div class="row between"><div class="who">Critic · The Reel</div><div class="score">9.0</div></div>
+          <p class="line">A symphony of restraint and rage. The cinematography alone deserves a separate ticket. Rao asks bigger questions than the script can answer — and that's the point.</p>
+        </div>
+        <div class="review">
+          <div class="row between"><div class="who">Verified · Priya M.</div><div class="score">9.0</div></div>
+          <p class="line">Watched in IMAX. Goosebumps from the first frame. Sound design is unreal. Stay for the credits, the post-credit beat is worth it.</p>
+        </div>
+        <div class="review">
+          <div class="row between"><div class="who">Verified · Rohan K.</div><div class="score">8.0</div></div>
+          <p class="line">Slow-burn, but rewards patience. Third act is a knockout. The score by Lin Hao is the kind you'll be humming all week.</p>
+        </div>
+        <div class="review">
+          <div class="row between"><div class="who">Critic · Cinephile Daily</div><div class="score">8.5</div></div>
+          <p class="line">A confident, gorgeously shot film that trusts its audience. Aria Vance is electric. Kabir Anand delivers his most measured performance yet.</p>
+        </div>
+      </div>
+
+      <!-- Sticky CTA -->
+      <div class="sticky-cta">
+        <div class="grow">
+          <span class="lbl">Tickets from</span>
+          <span class="price">₹240 <span class="dim" style="font-size:13px;font-weight:400">· 12 venues nearby</span></span>
+        </div>
+        <a class="btn btn-primary" href="showtimes.html">Pick a showtime →</a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div id="footer"></div>
+<script>document.getElementById('footer').innerHTML = TVFooter();</script>
+<div id="bnav"></div>
+<script>document.getElementById('bnav').innerHTML = TVBottomNav('movies');</script>
+</body>
+</html>

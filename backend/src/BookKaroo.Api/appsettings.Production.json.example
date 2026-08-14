@@ -1,0 +1,43 @@
+{
+  "DATABASE_URL": "postgresql://postgres.[ref]:[password]@aws-...pooler.supabase.com:5432/postgres",
+
+  "SUPABASE_URL": "https://[ref].supabase.co",
+  "SUPABASE_ANON_KEY": "placeholder_anon_key",
+  "SUPABASE_SERVICE_ROLE_KEY": "placeholder_service_role_key",
+  "SUPABASE_STORAGE_BUCKET_QR": "qr-codes",
+  "SUPABASE_STORAGE_BUCKET_INVOICE": "invoices",
+
+  "JWT_SECRET": "your-256-bit-secret-here",
+  "JWT_ISSUER": "bookkaroo",
+  "JWT_AUDIENCE": "bookkaroo-api",
+  "JWT_ACCESS_TTL_MIN": "15",
+  "JWT_REFRESH_TTL_DAYS": "30",
+
+  "PAYMENT_PROVIDER": "razorpay",
+  "RAZORPAY_KEY_ID": "rzp_live_xxxxxxxxx",
+  "RAZORPAY_KEY_SECRET": "xxxxxxxxx",
+
+  "RESEND_API_KEY": "re_xxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "RESEND_FROM": "BookKaroo <onboarding@resend.dev>",
+
+  "TMDB_API_KEY": "xxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "TMDB_BEARER": "eyJhbGciOiJIUzI1NiJ9...",
+
+  "Serilog": {
+    "Using": [ "Serilog.Sinks.Console" ],
+    "MinimumLevel": {
+      "Default": "Information",
+      "Override": {
+        "Microsoft": "Warning",
+        "Microsoft.EntityFrameworkCore": "Warning",
+        "System": "Warning"
+      }
+    },
+    "WriteTo": [
+      { "Name": "Console" }
+    ],
+    "Enrich": [ "FromLogContext" ]
+  },
+
+  "AllowedHosts": "*"
+}

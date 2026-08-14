@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TicketVerse — Movies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/tv.css" />
+<style>
+.page-head { padding: 32px 0 24px; }
+.page-head h1 { font-family: var(--f-display); font-size: clamp(34px, 5vw, 56px); margin: 0 0 8px; font-weight: 600; letter-spacing: -0.02em; }
+.page-head p { color: var(--text-2); margin: 0; font-size: 15px; }
+.layout { display: grid; grid-template-columns: 280px 1fr; gap: 32px; padding-bottom: 80px; }
+@media (max-width: 1024px) { .layout { grid-template-columns: 240px 1fr; gap: 20px; } }
+@media (max-width: 768px) { .layout { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+.sidebar { position: sticky; top: calc(var(--nav-h) + 16px); align-self: start; }
+.fgrp { padding: 18px 0; border-bottom: 1px solid var(--border); }
+.fgrp:first-child { padding-top: 0; }
+.fgrp:last-child { border-bottom: 0; }
+.fgrp h4 { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-3); margin: 0 0 14px; font-weight: 600; }
+.fopt { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: 14px; color: var(--text-2); cursor: pointer; transition: color .15s; }
+.fopt:hover { color: var(--text-1); }
+.fopt input { accent-color: var(--violet); width: 16px; height: 16px; }
+.fopt .ct { margin-left: auto; color: var(--text-3); font-family: var(--f-mono); font-size: 11px; }
+.fopt input:checked + span { color: var(--text-1); font-weight: 500; }
+.format-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.fpill { padding: 6px 10px; border-radius: var(--r-pill); border: 1px solid var(--border); background: var(--surface); font-size: 12px; cursor: pointer; transition: all .2s; }
+.fpill.on { background: var(--grad-violet); border-color: transparent; color: white; box-shadow: var(--sh-glow-violet); }
+.range { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--text-2); }
+.range input[type="range"] { flex: 1; accent-color: var(--violet); }
+
+.toolbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
+.toolbar .count { font-size: 14px; color: var(--text-2); }
+.toolbar .count b { color: var(--text-1); font-weight: 600; }
+.toolbar .spacer { flex: 1; }
+.tab-row { display: flex; gap: 4px; padding: 4px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-pill); }
+.tab-row button { padding: 6px 14px; border-radius: var(--r-pill); font-size: 13px; color: var(--text-3); font-weight: 500; }
+.tab-row button.on { background: var(--bg-3); color: var(--text-1); box-shadow: var(--sh-1); }
+.sort-sel { display: flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: var(--r-pill); background: var(--surface); border: 1px solid var(--border); font-size: 13px; }
+.sort-sel select { background: transparent; border: 0; color: var(--text-1); font: inherit; outline: none; }
+
+.movie-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px 20px; }
+@media (max-width: 1100px) { .movie-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 700px) { .movie-grid { grid-template-columns: repeat(2, 1fr); gap: 16px 12px; } }
+
+.mcard { display: flex; flex-direction: column; gap: 10px; }
+.mcard .poster { aspect-ratio: 2/3; }
+.mcard .row-meta { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-3); }
+.mcard h3 { font-family: var(--f-ui); font-size: 15px; font-weight: 600; margin: 0; }
+
+.applied { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.applied .chip { background: rgba(168,85,247,0.14); color: #C4A0FF; border-color: rgba(168,85,247,0.28); cursor: pointer; }
+.applied .chip:hover { background: rgba(168,85,247,0.22); }
+
+/* mobile filter sheet trigger */
+.mob-filters { display: none; }
+@media (max-width: 768px) { .mob-filters { display: flex; gap: 8px; } }
+
+.empty-skel { display: contents; }
+</style>
+</head>
+<body data-screen-label="Movies Listing">
+<script src="assets/icons.js"></script>
+<script src="assets/data.js"></script>
+<script>TVTheme.init();</script>
+<div id="nav"></div>
+<script>document.getElementById('nav').innerHTML = TVNav('movies');</script>
+
+<main class="container">
+  <header class="page-head">
+    <span class="eyebrow">Movies · Mumbai</span>
+    <h1>What's on this week</h1>
+    <p>312 films · 4,200+ shows across 86 cinemas in Mumbai. Filter by language, format and genre.</p>
+  </header>
+
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar glass" style="padding: 22px;">
+      <div class="row between" style="margin-bottom:8px">
+        <div style="font-weight:600">Filters</div>
+        <button class="btn-link" style="font-size:12px">Clear all</button>
+      </div>
+
+      <div class="fgrp">
+        <h4>Language</h4>
+        <label class="fopt"><input type="checkbox" checked /><span>English</span><span class="ct">142</span></label>
+        <label class="fopt"><input type="checkbox" checked /><span>Hindi</span><span class="ct">98</span></label>
+        <label class="fopt"><input type="checkbox" /><span>Tamil</span><span class="ct">28</span></label>
+        <label class="fopt"><input type="checkbox" /><span>Telugu</span><span class="ct">22</span></label>
+        <label class="fopt"><input type="checkbox" /><span>Marathi</span><span class="ct">14</span></label>
+        <label class="fopt"><input type="checkbox" /><span>Malayalam</span><span class="ct">8</span></label>
+      </div>
+
+      <div class="fgrp">
+        <h4>Format</h4>
+        <div class="format-pills">
+          <button class="fpill on">2D</button>
+          <button class="fpill on">IMAX</button>
+          <button class="fpill">IMAX 3D</button>
+          <button class="fpill">4DX</button>
+          <button class="fpill">Dolby Atmos</button>
+          <button class="fpill">PVR P[XL]</button>
+          <button class="fpill">Recliner</button>
+        </div>
+      </div>
+
+      <div class="fgrp">
+        <h4>Genre</h4>
+        <label class="fopt"><input type="checkbox" /><span>Action</span><span class="ct">62</span></label>
+        <label class="fopt"><input type="checkbox" checked /><span>Drama</span><span class="ct">88</span></label>
+        <label class="fopt"><input type="checkbox" /><span>Sci-Fi</span><span class="ct">21</span></label>
+        <label class="fopt"><input type="checkbox" /><span>Thriller</span><span class="ct">34</span></label>
+        <label class="fopt"><input type="checkbox" /><span>Romance</span><span class="ct">19</span></label>
+        <label class="fopt"><input type="checkbox" /><span>Comedy</span><span class="ct">42</span></label>
+        <label class="fopt"><input type="checkbox" /><span>Animation</span><span class="ct">15</span></label>
+      </div>
+
+      <div class="fgrp">
+        <h4>Rating</h4>
+        <div class="range">
+          <span>7.0</span>
+          <input type="range" min="0" max="10" step="0.1" value="7" />
+          <span style="font-family:var(--f-mono);color:var(--text-1)">+</span>
+        </div>
+        <div style="font-size:12px;color:var(--text-3);margin-top:8px">Show only films rated 7.0★ or higher</div>
+      </div>
+
+      <div class="fgrp">
+        <h4>Price</h4>
+        <div class="range">
+          <span>₹0</span>
+          <input type="range" min="0" max="2000" step="50" value="800" />
+          <span style="font-family:var(--f-mono);color:var(--text-1)">₹800</span>
+        </div>
+      </div>
+
+      <div class="fgrp">
+        <h4>Showing</h4>
+        <label class="fopt"><input type="radio" name="when" checked /><span>Today</span></label>
+        <label class="fopt"><input type="radio" name="when" /><span>Tomorrow</span></label>
+        <label class="fopt"><input type="radio" name="when" /><span>This weekend</span></label>
+        <label class="fopt"><input type="radio" name="when" /><span>Next 7 days</span></label>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <section>
+      <div class="toolbar">
+        <span class="count"><b>184</b> films match</span>
+        <span class="dim hide-md" style="font-size:13px">in Mumbai · today</span>
+        <div class="spacer"></div>
+        <div class="mob-filters">
+          <button class="btn btn-ghost btn-sm">Filters · 3</button>
+        </div>
+        <div class="tab-row only-desktop">
+          <button class="on">Grid</button>
+          <button>List</button>
+        </div>
+        <div class="sort-sel">
+          <span class="dim">Sort</span>
+          <select>
+            <option>Popularity</option>
+            <option>Rating · High to low</option>
+            <option>Newest releases</option>
+            <option>Showtime · Earliest</option>
+            <option>Price · Low to high</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="applied">
+        <span class="chip">English ✕</span>
+        <span class="chip">Hindi ✕</span>
+        <span class="chip">Drama ✕</span>
+        <span class="chip">2D · IMAX ✕</span>
+        <span class="chip">7.0★ + ✕</span>
+      </div>
+
+      <div class="movie-grid" id="mgrid"></div>
+
+      <!-- Skeleton row (loading state demo) -->
+      <div style="margin-top:48px">
+        <div class="eyebrow" style="margin-bottom:14px">Loading more · skeleton</div>
+        <div class="movie-grid" id="skel"></div>
+      </div>
+
+      <div style="margin-top:32px; display:flex; justify-content:center">
+        <button class="btn btn-ghost">Load 24 more</button>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div id="footer"></div>
+<script>document.getElementById('footer').innerHTML = TVFooter();</script>
+<div id="bnav"></div>
+<script>document.getElementById('bnav').innerHTML = TVBottomNav('movies');</script>
+
+<script>
+const formats = [['IMAX','chip-violet'],['4DX','chip-amber'],['Dolby','chip-cyan'],['IMAX 3D','chip-violet'],['Atmos','chip-cyan']];
+function mcard(m, i) {
+  const fmt = formats[i % formats.length];
+  return `<a class="mcard poster-card" href="movie-detail.html">
+    <div class="poster t-${m.tint}">
+      <div class="stripes"></div>
+      <span class="chip chip-amber" style="position:absolute;top:10px;right:10px;backdrop-filter:blur(8px)">⭐ ${m.r}</span>
+      <span class="chip ${fmt[1]}" style="position:absolute;top:10px;left:10px">${fmt[0]}</span>
+      <div class="rank" style="font-size:28px;top:auto;bottom:14px;left:14px;right:14px;line-height:1">${m.t}</div>
+      <div class="label">[ POSTER · ${m.id.toUpperCase()} ]</div>
+    </div>
+    <div>
+      <h3>${m.t}</h3>
+      <div class="row-meta">${m.s}</div>
+    </div>
+  </a>`;
+}
+const repeat = [...TVData.nowShowing, ...TVData.nowShowing.slice(0,4).map((m,i)=>({...m, id:m.id+'-2', t:m.t}))];
+document.getElementById('mgrid').innerHTML = repeat.map(mcard).join('');
+document.getElementById('skel').innerHTML = Array(4).fill(0).map(()=>`
+  <div class="mcard">
+    <div class="skel" style="aspect-ratio:2/3;border-radius:var(--r-3)"></div>
+    <div class="skel" style="height:14px;width:80%"></div>
+    <div class="skel" style="height:11px;width:55%"></div>
+  </div>
+`).join('');
+</script>
+</body>
+</html>

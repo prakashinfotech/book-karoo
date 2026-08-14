@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "http": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+
+        "DATABASE_URL": "postgresql://postgres.[ref]:[password]@aws-...pooler.supabase.com:5432/postgres",
+
+        "DATABASE_DIRECT_URL": "Host=localhost;Port=5432;Database=bookkaroo_dev;Username=postgres;Password=postgres",
+
+        "SUPABASE_URL": "https://[ref].supabase.co",
+        "SUPABASE_ANON_KEY": "sb_publishable_xxxxxxxxxxxxxxxxxx",
+        "SUPABASE_SERVICE_ROLE_KEY": "sb_secret_xxxxxxxxxxxxxxxxxx",
+        "SUPABASE_STORAGE_BUCKET_QR": "qr-codes",
+        "SUPABASE_STORAGE_BUCKET_INVOICE": "invoices",
+
+        "JWT_SECRET": "your-256-bit-secret-here",
+        "JWT_ISSUER": "bookkaroo",
+        "JWT_AUDIENCE": "bookkaroo-api",
+        "JWT_ACCESS_TTL_MIN": "120",
+        "JWT_REFRESH_TTL_DAYS": "30",
+
+        "PAYMENT_PROVIDER": "mock",
+        "RAZORPAY_KEY_ID": "rzp_test_xxxxxxxxx",
+        "RAZORPAY_KEY_SECRET": "xxxxxxxxx",
+
+        "RESEND_API_KEY": "re_xxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "RESEND_FROM": "BookKaroo <onboarding@resend.dev>",
+        "RESEND_DEV_OVERRIDE_TO": "you@example.com",
+
+        "TMDB_API_KEY": "xxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "TMDB_BEARER": "eyJhbGciOiJIUzI1NiJ9...",
+
+        "GROQ_API_KEY": "gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "GROQ_MODEL": "llama-3.3-70b-versatile",
+        "CHATBOT_ENABLED": "true"
+      }
+    }
+  }
+}

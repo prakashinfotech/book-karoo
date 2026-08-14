@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TicketVerse — Seat Selection</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/tv.css" />
+<style>
+.seat-head { padding: 24px 0 16px; display: flex; gap: 18px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.seat-head h1 { font-family: var(--f-display); font-size: clamp(24px, 3vw, 32px); margin: 0; font-weight: 600; letter-spacing: -0.02em; }
+.seat-head .meta { color: var(--text-3); font-size: 13px; margin-top: 4px; }
+
+.timer-wrap { display: flex; align-items: center; gap: 12px; padding: 10px 18px 10px 12px; border-radius: var(--r-pill); background: var(--surface); border: 1px solid var(--border-2); }
+.timer-ring { width: 38px; height: 38px; transform: rotate(-90deg); }
+.timer-ring .bg { stroke: var(--surface-3); }
+.timer-ring .fg { stroke: var(--amber); transition: stroke-dashoffset 1s linear; }
+.timer-info .lbl { font-size: 10px; color: var(--text-3); letter-spacing: 0.12em; text-transform: uppercase; }
+.timer-info .val { font-family: var(--f-mono); font-weight: 600; font-size: 18px; color: var(--text-1); line-height: 1; margin-top: 2px; }
+
+.seat-layout { display: grid; grid-template-columns: 1fr 360px; gap: 28px; padding-bottom: 80px; }
+@media (max-width: 1024px) { .seat-layout { grid-template-columns: 1fr; } }
+
+.theatre {
+  padding: 40px 24px 32px;
+  border-radius: var(--r-4);
+  background: radial-gradient(80% 60% at 50% 0%, rgba(99,102,241,0.18), transparent 60%), var(--surface);
+  border: 1px solid var(--border);
+  overflow-x: auto;
+}
+
+.screen-wrap { text-align: center; margin-bottom: 36px; }
+.screen-arc {
+  width: 70%; max-width: 640px; margin: 0 auto;
+  height: 32px; border-radius: 50%/100% 100% 0 0 / 100% 100% 0 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.2));
+  filter: drop-shadow(0 -10px 25px rgba(255,255,255,0.35));
+  transform: perspective(400px) rotateX(40deg);
+}
+.screen-label { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.3em; color: var(--text-3); margin-top: 18px; }
+
+.section-title-row { display: flex; align-items: center; gap: 12px; margin: 24px 0 10px; padding-left: 32px; }
+.section-title-row .nm { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.18em; color: var(--text-2); }
+.section-title-row .pr { font-family: var(--f-mono); font-size: 11px; color: var(--text-3); margin-left: auto; padding-right: 12px; }
+.section-title-row .pill { padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 600; letter-spacing: 0.08em; }
+.section-title-row .pill.gold { background: rgba(245,197,107,0.16); color: var(--gold); }
+.section-title-row .pill.blue { background: rgba(99,102,241,0.16); color: #A5B0FF; }
+.section-title-row .pill.white { background: rgba(255,255,255,0.08); color: var(--text-2); }
+
+.row-line { display: grid; grid-template-columns: 24px 1fr 24px; gap: 6px; align-items: center; margin-bottom: 6px; padding: 0 6px; }
+.row-letter { font-family: var(--f-mono); font-size: 10px; color: var(--text-3); text-align: center; }
+.row-seats { display: flex; gap: 4px; justify-content: center; flex-wrap: nowrap; }
+
+.seat {
+  width: 26px; height: 26px;
+  border-radius: 6px 6px 4px 4px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.14);
+  cursor: pointer;
+  font-size: 9px; color: rgba(255,255,255,0.45);
+  display: grid; place-items: center;
+  transition: transform .12s, background .15s, border-color .15s;
+}
+.seat:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.4); }
+.seat.recliner { background: rgba(245,197,107,0.16); border-color: rgba(245,197,107,0.35); width: 32px; height: 30px; border-radius: 9px 9px 5px 5px; }
+.seat.recliner:hover { background: rgba(245,197,107,0.28); }
+.seat.exec { background: rgba(99,102,241,0.18); border-color: rgba(99,102,241,0.4); }
+.seat.exec:hover { background: rgba(99,102,241,0.32); }
+.seat.normal { /* default styling */ }
+.seat.taken { background: var(--surface-3); border-color: var(--border); cursor: not-allowed; opacity: 0.4; color: transparent; }
+.seat.taken:hover { transform: none; }
+.seat.gap { background: transparent; border: 0; cursor: default; pointer-events: none; }
+.seat.sel {
+  background: var(--grad-violet) !important;
+  border-color: transparent !important;
+  color: white !important;
+  box-shadow: 0 0 0 2px rgba(168,85,247,0.4), 0 6px 18px -6px rgba(168,85,247,0.7);
+  transform: translateY(-1px);
+}
+.seat.companion { background: rgba(34,211,238,0.18); border-color: rgba(34,211,238,0.45); }
+
+.legend-bar {
+  display: flex; gap: 18px; flex-wrap: wrap; padding: 14px 18px;
+  border-radius: var(--r-3); background: var(--surface); border: 1px solid var(--border);
+  margin-top: 24px; font-size: 12px;
+}
+.legend-bar .lg-item { display: flex; align-items: center; gap: 6px; color: var(--text-2); }
+.legend-bar .lg-seat { width: 14px; height: 14px; border-radius: 4px; }
+
+/* Aside summary */
+.aside { position: sticky; top: calc(var(--nav-h) + 16px); align-self: start; }
+.summary {
+  padding: 22px; border-radius: var(--r-4);
+  background: var(--surface); border: 1px solid var(--border);
+}
+.summary h4 { margin: 0 0 12px; font-family: var(--f-ui); font-weight: 600; font-size: 14px; }
+.movie-mini { display: flex; gap: 12px; padding-bottom: 14px; border-bottom: 1px dashed var(--border); margin-bottom: 14px; }
+.movie-mini .mp { width: 56px; aspect-ratio: 2/3; border-radius: 8px; flex-shrink: 0; }
+.movie-mini .mt { font-weight: 600; font-size: 14px; }
+.movie-mini .ms { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+.movie-mini .mv { font-size: 12px; color: var(--text-2); margin-top: 4px; }
+
+.summary .row-line { display:flex; justify-content: space-between; padding: 8px 0; font-size: 14px; color: var(--text-2); }
+.summary .row-line b { color: var(--text-1); font-weight: 500; }
+
+.sel-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; min-height: 24px; }
+.sel-chips .chip { padding: 4px 10px; }
+
+.summary .breakdown {
+  margin: 14px 0; padding: 12px; border-radius: var(--r-2);
+  background: var(--surface); border: 1px solid var(--border);
+  font-size: 13px;
+}
+.summary .breakdown .ln { display: flex; justify-content: space-between; padding: 4px 0; color: var(--text-2); }
+.summary .breakdown .ln.tot { border-top: 1px solid var(--border); padding-top: 10px; margin-top: 8px; font-size: 16px; }
+.summary .breakdown .ln.tot b { font-family: var(--f-display); font-size: 22px; }
+
+.fnb-row {
+  display: flex; gap: 10px; padding: 12px; border-radius: var(--r-2);
+  background: rgba(245,197,107,0.08); border: 1px solid rgba(245,197,107,0.22);
+  font-size: 13px; align-items: center;
+}
+.fnb-row .ic { width: 32px; height: 32px; border-radius: 8px; background: rgba(245,197,107,0.2); display: grid; place-items: center; }
+
+.checkout-stick {
+  position: sticky; bottom: 8px; margin-top: 14px;
+}
+</style>
+</head>
+<body data-screen-label="Seat Selection">
+<script src="assets/icons.js"></script>
+<script>TVTheme.init();</script>
+<div id="nav"></div>
+<script>document.getElementById('nav').innerHTML = TVNav('movies');</script>
+
+<main class="container">
+  <header class="seat-head">
+    <div class="row" style="gap:14px">
+      <button class="btn btn-ghost btn-sm">← Back</button>
+      <div>
+        <span class="eyebrow">PVR Icon · Audi 4 · IMAX</span>
+        <h1>Mirage Protocol</h1>
+        <div class="meta">Today · 5:15 PM · IMAX · English · 2h 28m</div>
+      </div>
+    </div>
+
+    <div class="timer-wrap" id="timer">
+      <svg class="timer-ring" viewBox="0 0 40 40">
+        <circle class="bg" cx="20" cy="20" r="16" stroke-width="3" fill="none"/>
+        <circle class="fg" id="ring" cx="20" cy="20" r="16" stroke-width="3" fill="none" stroke-linecap="round"
+          stroke-dasharray="100.5" stroke-dashoffset="0" />
+      </svg>
+      <div class="timer-info">
+        <div class="lbl">Hold expires in</div>
+        <div class="val"><span id="mm">10</span>:<span id="ss">00</span></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="seat-layout">
+    <section class="theatre">
+      <div class="screen-wrap">
+        <div class="screen-arc"></div>
+        <div class="screen-label">— ALL EYES THIS WAY · IMAX SCREEN —</div>
+      </div>
+
+      <div id="hall"></div>
+
+      <div class="legend-bar">
+        <span class="lg-item"><span class="lg-seat" style="background:rgba(245,197,107,0.16);border:1px solid rgba(245,197,107,0.35)"></span>Recliner · ₹650</span>
+        <span class="lg-item"><span class="lg-seat" style="background:rgba(99,102,241,0.18);border:1px solid rgba(99,102,241,0.4)"></span>Executive · ₹420</span>
+        <span class="lg-item"><span class="lg-seat" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14)"></span>Normal · ₹260</span>
+        <span class="lg-item"><span class="lg-seat" style="background:var(--grad-violet)"></span>Selected</span>
+        <span class="lg-item"><span class="lg-seat" style="background:var(--surface-3);opacity:.5"></span>Sold</span>
+        <span class="lg-item"><span class="lg-seat" style="background:rgba(34,211,238,0.18);border:1px solid rgba(34,211,238,0.45)"></span>Wheelchair-accessible</span>
+      </div>
+    </section>
+
+    <aside class="aside">
+      <div class="summary">
+        <div class="movie-mini">
+          <div class="poster mp t-7"><div class="stripes"></div></div>
+          <div>
+            <div class="mt">Mirage Protocol</div>
+            <div class="ms">IMAX · UA · 2h 28m</div>
+            <div class="mv">PVR Icon · Audi 4 · 5:15 PM</div>
+          </div>
+        </div>
+
+        <div class="row-line"><span>Selected</span><b id="selCount">2 seats</b></div>
+        <div class="sel-chips" id="selChips">
+          <span class="chip chip-violet">G7</span>
+          <span class="chip chip-violet">G8</span>
+        </div>
+
+        <div class="breakdown">
+          <div class="ln"><span>2 × Executive (G7, G8)</span><span>₹840</span></div>
+          <div class="ln"><span>Convenience fee</span><span>₹48</span></div>
+          <div class="ln"><span>GST</span><span>₹9</span></div>
+          <div class="ln tot"><span>Total</span><b>₹897</b></div>
+        </div>
+
+        <div class="fnb-row">
+          <div class="ic">🍿</div>
+          <div>
+            <div style="font-weight:600">Add F&amp;B?</div>
+            <div class="dim" style="font-size:11px;margin-top:2px">Combo from ₹220. Skip the queue at intermission.</div>
+          </div>
+        </div>
+
+        <div class="checkout-stick">
+          <a class="btn btn-primary btn-lg" href="checkout.html" style="width:100%;justify-content:center">Continue to checkout · ₹897</a>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;font-size:12px;color:var(--text-3);text-align:center">By proceeding you agree to TicketVerse's terms. Free reschedule up to 4h before show.</div>
+    </aside>
+  </div>
+</main>
+
+<div id="footer"></div>
+<script>document.getElementById('footer').innerHTML = TVFooter();</script>
+<div id="bnav"></div>
+<script>document.getElementById('bnav').innerHTML = TVBottomNav('tickets');</script>
+
+<script>
+// Seat map
+// Row letters with category and seat layout (g = gap, t = taken, c = companion, x = no seat)
+const rows = [
+  // Recliner
+  { l:'A', cat:'recliner', layout:'10101010 g 1010101001' },
+  { l:'B', cat:'recliner', layout:'10101010 g 10t01t1010' },
+  // Executive
+  { l:'C', cat:'exec', layout:'1111111111 g 1111111111' },
+  { l:'D', cat:'exec', layout:'111tt11111 g 1111t11111' },
+  { l:'E', cat:'exec', layout:'1111111111 g 1111111111' },
+  { l:'F', cat:'exec', layout:'111111tt11 g 1111111111' },
+  { l:'G', cat:'exec', layout:'11111111ss g 11111111tt' }, // selected G7,G8
+  { l:'H', cat:'exec', layout:'1111111111 g 1111t11111' },
+  // Normal
+  { l:'J', cat:'normal', layout:'111111111111 g 111111111111' },
+  { l:'K', cat:'normal', layout:'11ttt1111111 g 1111111111tt' },
+  { l:'L', cat:'normal', layout:'111111111111 g 111111111111' },
+  { l:'M', cat:'normal', layout:'1c11111111c1 g 1c1111111111' }, // companion seats
+];
+
+const sectionLabels = {
+  recliner: { label: 'RECLINER · 4 rows · ₹650', cls: 'gold' },
+  exec: { label: 'EXECUTIVE · 6 rows · ₹420', cls: 'blue' },
+  normal: { label: 'NORMAL · 4 rows · ₹260', cls: 'white' }
+};
+
+function renderHall() {
+  let html = '';
+  let lastCat = null;
+  rows.forEach((r, ri) => {
+    if (r.cat !== lastCat) {
+      const sec = sectionLabels[r.cat];
+      html += `<div class="section-title-row">
+        <span class="pill ${sec.cls}">${r.cat.toUpperCase()}</span>
+        <span class="nm">${sec.label}</span>
+        <span class="pr">Row ${r.l}+</span>
+      </div>`;
+      lastCat = r.cat;
+    }
+    let seats = '';
+    let seatNum = 0;
+    for (const ch of r.layout) {
+      if (ch === ' ') continue;
+      if (ch === 'g') { seats += `<span class="seat gap"></span>`; continue; }
+      seatNum++;
+      let cls = `seat ${r.cat}`;
+      if (ch === 't') cls += ' taken';
+      if (ch === 's') cls += ' sel';
+      if (ch === 'c') cls += ' companion';
+      seats += `<button class="${cls}" data-row="${r.l}" data-num="${seatNum}">${seatNum}</button>`;
+    }
+    html += `<div class="row-line">
+      <span class="row-letter">${r.l}</span>
+      <div class="row-seats">${seats}</div>
+      <span class="row-letter">${r.l}</span>
+    </div>`;
+  });
+  document.getElementById('hall').innerHTML = html;
+}
+renderHall();
+
+// Seat click toggles
+document.getElementById('hall').addEventListener('click', e => {
+  const s = e.target.closest('.seat');
+  if (!s || s.classList.contains('taken') || s.classList.contains('gap')) return;
+  s.classList.toggle('sel');
+  updateSummary();
+});
+
+function updateSummary() {
+  const seats = [...document.querySelectorAll('.seat.sel')];
+  const labels = seats.map(s => `${s.dataset.row}${s.dataset.num}`);
+  document.getElementById('selCount').textContent = `${seats.length} seat${seats.length===1?'':'s'}`;
+  document.getElementById('selChips').innerHTML = labels.map(l => `<span class="chip chip-violet">${l}</span>`).join('') || '<span class="dim" style="font-size:12px">Tap seats to select</span>';
+}
+
+// Countdown
+let total = 600; // 10 min
+const ring = document.getElementById('ring');
+const C = 2 * Math.PI * 16; // ~100.5
+ring.setAttribute('stroke-dasharray', C.toFixed(2));
+function tick() {
+  if (total <= 0) return;
+  total--;
+  const m = String(Math.floor(total/60)).padStart(2,'0');
+  const s = String(total%60).padStart(2,'0');
+  document.getElementById('mm').textContent = m;
+  document.getElementById('ss').textContent = s;
+  const off = C * (1 - total/600);
+  ring.setAttribute('stroke-dashoffset', off.toFixed(2));
+  if (total < 60) ring.style.stroke = 'var(--crimson-2)';
+}
+setInterval(tick, 1000);
+</script>
+</body>
+</html>

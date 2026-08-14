@@ -1,0 +1,15 @@
+# Normalize all text files to LF in the repo; let git auto-detect binaries.
+* text=auto eol=lf
+
+# Explicit binaries — never touch line endings
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.pdf binary

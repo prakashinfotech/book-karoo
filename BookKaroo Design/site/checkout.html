@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TicketVerse — Checkout</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/tv.css" />
+<style>
+.steps { display: flex; gap: 8px; padding: 24px 0 8px; align-items: center; font-size: 12px; color: var(--text-3); }
+.steps b { color: var(--text-1); font-weight: 500; }
+.step-pill { display: inline-flex; gap: 8px; align-items: center; padding: 6px 12px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border); font-size: 12px; }
+.step-pill.on { background: var(--grad-violet); color: white; border-color: transparent; box-shadow: var(--sh-glow-violet); }
+.step-pill.done { background: rgba(52,211,153,0.12); color: #6EE7B7; border-color: rgba(52,211,153,0.28); }
+.step-pill .num { width: 18px; height: 18px; border-radius: 999px; background: rgba(255,255,255,0.12); display: grid; place-items: center; font-size: 10px; font-weight: 600; }
+.step-pill.on .num { background: rgba(255,255,255,0.25); }
+.step-pill.done .num { background: rgba(52,211,153,0.3); }
+.step-bar { flex: 0 0 28px; height: 1px; background: var(--border); }
+
+.page-h { font-family: var(--f-display); font-size: clamp(28px, 4vw, 38px); margin: 8px 0 4px; font-weight: 600; letter-spacing: -0.02em; }
+.page-sub { color: var(--text-2); font-size: 14px; margin: 0 0 24px; }
+
+.layout { display: grid; grid-template-columns: 1fr 380px; gap: 28px; padding-bottom: 80px; }
+@media (max-width: 1024px) { .layout { grid-template-columns: 1fr; } }
+
+.card {
+  padding: 22px;
+  border-radius: var(--r-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.card h3 { margin: 0 0 14px; font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.card h3 .num { width: 22px; height: 22px; border-radius: 999px; background: var(--grad-violet); display: grid; place-items: center; font-size: 11px; color: white; font-weight: 600; }
+
+/* Contact form */
+.frm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 600px) { .frm-grid { grid-template-columns: 1fr; } }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-size: 12px; color: var(--text-3); letter-spacing: 0.04em; }
+.field input, .field select {
+  background: var(--bg-3); border: 1px solid var(--border-2); color: var(--text-1);
+  padding: 12px 14px; border-radius: var(--r-2); font: inherit; font-size: 14px;
+  transition: border-color .15s, box-shadow .15s;
+}
+.field input:focus, .field select:focus { outline: 0; border-color: var(--violet); box-shadow: 0 0 0 3px rgba(168,85,247,0.2); }
+
+.opts-toggle { display: flex; align-items: center; gap: 10px; padding: 8px 0; color: var(--text-2); font-size: 13px; }
+
+/* F&B inline cards */
+.fnb-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+@media (max-width: 700px) { .fnb-grid { grid-template-columns: 1fr; } }
+.fnb {
+  padding: 14px; border-radius: var(--r-3);
+  background: var(--surface-2); border: 1px solid var(--border);
+  display: flex; gap: 12px; align-items: center;
+}
+.fnb .ic {
+  width: 48px; height: 48px; border-radius: var(--r-2);
+  background: linear-gradient(135deg,#2a2a0a,#713f12); display: grid; place-items: center; font-size: 22px; flex-shrink: 0;
+}
+.fnb .nm { font-weight: 600; font-size: 14px; }
+.fnb .pr { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+.fnb .qty { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+.qty button { width: 26px; height: 26px; border-radius: 999px; background: var(--surface-3); display: grid; place-items: center; font-size: 14px; color: var(--text-1); }
+.qty button:hover { background: var(--border-2); }
+.qty span { min-width: 18px; text-align: center; font-family: var(--f-mono); font-size: 13px; }
+
+/* Payment */
+.pay-list { display: grid; gap: 8px; }
+.pay {
+  display: flex; gap: 14px; align-items: center;
+  padding: 14px 18px; border-radius: var(--r-3);
+  background: var(--surface-2); border: 1px solid var(--border);
+  cursor: pointer; transition: border-color .2s, background .2s;
+}
+.pay:hover { border-color: var(--border-2); }
+.pay.on { border-color: var(--violet); background: rgba(168,85,247,0.06); box-shadow: 0 0 0 1px var(--violet); }
+.pay-radio { width: 18px; height: 18px; border-radius: 999px; border: 2px solid var(--border-2); display: grid; place-items: center; flex-shrink: 0; }
+.pay.on .pay-radio { border-color: var(--violet); }
+.pay.on .pay-radio::after { content:''; width: 8px; height: 8px; border-radius: 999px; background: var(--violet); }
+.pay-icon { width: 40px; height: 28px; border-radius: 6px; background: var(--bg-3); display: grid; place-items: center; flex-shrink: 0; font-family: var(--f-mono); font-size: 10px; color: var(--text-2); border: 1px solid var(--border); }
+.pay-name { font-weight: 600; font-size: 14px; }
+.pay-sub { font-size: 12px; color: var(--text-3); }
+.pay-tag { margin-left: auto; }
+
+.pay-detail-card { margin-top: 14px; padding: 18px; border-radius: var(--r-3); background: rgba(168,85,247,0.05); border: 1px solid rgba(168,85,247,0.18); }
+.pay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.upi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 8px; }
+.upi { padding: 14px 8px; border-radius: var(--r-2); background: var(--bg-3); border: 1px solid var(--border); text-align: center; cursor: pointer; }
+.upi:hover { border-color: var(--border-2); }
+.upi .l { font-size: 12px; font-weight: 600; }
+.upi .s { font-size: 10px; color: var(--text-3); margin-top: 2px; }
+
+/* Aside */
+.aside { position: sticky; top: calc(var(--nav-h) + 16px); align-self: start; }
+.summary {
+  padding: 22px; border-radius: var(--r-4);
+  background: var(--surface); border: 1px solid var(--border);
+}
+.movie-mini { display: flex; gap: 12px; padding-bottom: 14px; border-bottom: 1px dashed var(--border); margin-bottom: 14px; }
+.movie-mini .mp { width: 56px; aspect-ratio: 2/3; border-radius: 8px; flex-shrink: 0; }
+.movie-mini .mt { font-weight: 600; font-size: 14px; line-height: 1.3; }
+.movie-mini .ms { font-size: 12px; color: var(--text-3); margin-top: 4px; }
+.movie-mini .mv { font-size: 12px; color: var(--text-2); margin-top: 4px; }
+
+.bdrow { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; color: var(--text-2); }
+.bdrow b { color: var(--text-1); font-weight: 500; }
+.bdrow.disc { color: var(--emerald); }
+.bdrow.tot { font-size: 17px; font-weight: 600; padding-top: 10px; border-top: 1px solid var(--border); margin-top: 8px; color: var(--text-1); }
+.bdrow.tot b { font-family: var(--f-display); font-size: 28px; font-weight: 600; }
+
+.promo {
+  display: flex; gap: 8px; align-items: center;
+  padding: 10px; border-radius: var(--r-2);
+  background: rgba(52,211,153,0.06); border: 1px dashed rgba(52,211,153,0.3);
+  margin: 14px 0;
+}
+.promo input { flex: 1; background: transparent; border: 0; color: var(--text-1); outline: 0; font-family: var(--f-mono); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+.promo-applied { background: rgba(52,211,153,0.1); border-style: solid; }
+
+.secure-row { display: flex; align-items: center; gap: 10px; padding: 12px 0 0; font-size: 12px; color: var(--text-3); }
+.lock { width: 24px; height: 24px; border-radius: 999px; background: rgba(52,211,153,0.16); color: #6EE7B7; display: grid; place-items: center; font-size: 11px; }
+</style>
+</head>
+<body data-screen-label="Checkout">
+<script src="assets/icons.js"></script>
+<script>TVTheme.init();</script>
+<div id="nav"></div>
+<script>document.getElementById('nav').innerHTML = TVNav('movies');</script>
+
+<main class="container">
+  <div class="steps">
+    <span class="step-pill done"><span class="num">✓</span>Seats</span>
+    <span class="step-bar"></span>
+    <span class="step-pill on"><span class="num">2</span>Checkout</span>
+    <span class="step-bar"></span>
+    <span class="step-pill"><span class="num">3</span>Confirmation</span>
+  </div>
+
+  <h1 class="page-h">Almost there.</h1>
+  <p class="page-sub">2 seats held · 09:42 remaining · Free reschedule until 1:15 PM</p>
+
+  <div class="layout">
+    <section>
+      <!-- Contact -->
+      <div class="card">
+        <h3><span class="num">1</span>Contact &amp; ticket delivery</h3>
+        <div class="frm-grid">
+          <div class="field"><label>Full name</label><input value="Aarav Rastogi" /></div>
+          <div class="field"><label>Mobile</label><input value="+91 98213 04567" /></div>
+          <div class="field" style="grid-column: 1/-1"><label>Email (for the QR ticket)</label><input value="aarav.r@studio.in" /></div>
+        </div>
+        <label class="opts-toggle"><input type="checkbox" checked /><span>Send tickets to WhatsApp too</span></label>
+        <label class="opts-toggle"><input type="checkbox" /><span>I'll be carrying ID — claim my Plus loyalty points</span></label>
+      </div>
+
+      <!-- Add-ons -->
+      <div class="card">
+        <h3><span class="num">2</span>Add F&amp;B (skip the queue)</h3>
+        <div class="fnb-grid">
+          <div class="fnb">
+            <div class="ic">🍿</div>
+            <div><div class="nm">Caramel popcorn</div><div class="pr">Large · ₹360</div></div>
+            <div class="qty"><button>−</button><span>1</span><button>+</button></div>
+          </div>
+          <div class="fnb">
+            <div class="ic" style="background:linear-gradient(135deg,#3a0a14,#7f1d1d)">🥤</div>
+            <div><div class="nm">Pepsi</div><div class="pr">700 ml · ₹220</div></div>
+            <div class="qty"><button>−</button><span>2</span><button>+</button></div>
+          </div>
+          <div class="fnb">
+            <div class="ic" style="background:linear-gradient(135deg,#0a3a2a,#064e3b)">🌯</div>
+            <div><div class="nm">Veg Wrap</div><div class="pr">Single · ₹260</div></div>
+            <div class="qty"><button>−</button><span>0</span><button>+</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment -->
+      <div class="card">
+        <h3><span class="num">3</span>Pay securely</h3>
+        <div class="pay-list">
+          <div class="pay on">
+            <span class="pay-radio"></span>
+            <div class="pay-icon" style="background:linear-gradient(135deg,#6366F1,#A855F7);color:white;font-weight:700;font-size:11px">UPI</div>
+            <div>
+              <div class="pay-name">UPI · GPay, PhonePe, Paytm</div>
+              <div class="pay-sub">Instant. Pay from your bank account.</div>
+            </div>
+            <span class="chip chip-violet pay-tag">Recommended</span>
+          </div>
+          <div class="pay-detail-card">
+            <div class="upi-grid">
+              <button class="upi"><div class="l" style="color:#4285F4">G</div><div class="s">Google Pay</div></button>
+              <button class="upi"><div class="l" style="color:#5F259F">P</div><div class="s">PhonePe</div></button>
+              <button class="upi"><div class="l" style="color:#00BAF2">P</div><div class="s">Paytm</div></button>
+              <button class="upi"><div class="l" style="color:var(--text-2)">⌨</div><div class="s">Other UPI</div></button>
+            </div>
+            <div class="field" style="margin-top:14px">
+              <label>UPI ID</label>
+              <input placeholder="aarav@oksbi" />
+            </div>
+          </div>
+          <div class="pay">
+            <span class="pay-radio"></span>
+            <div class="pay-icon">CARD</div>
+            <div>
+              <div class="pay-name">Credit / Debit card</div>
+              <div class="pay-sub">Visa, Mastercard, Rupay, Amex · 1% off with HDFC</div>
+            </div>
+            <span class="chip pay-tag">1% off</span>
+          </div>
+          <div class="pay">
+            <span class="pay-radio"></span>
+            <div class="pay-icon">NB</div>
+            <div>
+              <div class="pay-name">Net banking</div>
+              <div class="pay-sub">All major banks</div>
+            </div>
+          </div>
+          <div class="pay">
+            <span class="pay-radio"></span>
+            <div class="pay-icon" style="background:linear-gradient(135deg,#FBBF24,#E11D74);color:white">★</div>
+            <div>
+              <div class="pay-name">Pay later · TicketVerse Plus</div>
+              <div class="pay-sub">No interest · Settle by month-end</div>
+            </div>
+            <span class="chip chip-amber pay-tag">Plus only</span>
+          </div>
+          <div class="pay">
+            <span class="pay-radio"></span>
+            <div class="pay-icon">₹</div>
+            <div>
+              <div class="pay-name">Wallet · ₹248 balance</div>
+              <div class="pay-sub">Use balance + pay rest with UPI</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="secure-row">
+          <div class="lock">⌬</div>
+          <span>256-bit TLS · PCI DSS · We never store your card</span>
+        </div>
+      </div>
+    </section>
+
+    <aside class="aside">
+      <div class="summary">
+        <div class="movie-mini">
+          <div class="poster mp t-7"><div class="stripes"></div></div>
+          <div>
+            <div class="mt">Mirage Protocol</div>
+            <div class="ms">IMAX · UA · 2h 28m</div>
+            <div class="mv">PVR Icon · Audi 4 · 5:15 PM · Today</div>
+          </div>
+        </div>
+
+        <div class="bdrow"><span>2 × Executive (G7, G8)</span><b>₹840</b></div>
+        <div class="bdrow"><span>1 × Caramel popcorn</span><b>₹360</b></div>
+        <div class="bdrow"><span>2 × Pepsi</span><b>₹440</b></div>
+        <div class="bdrow"><span>Convenience fee</span><b>₹66</b></div>
+        <div class="bdrow"><span>GST (18%)</span><b>₹12</b></div>
+        <div class="bdrow disc"><span>Promo · TVPLUS50</span><b>− ₹50</b></div>
+
+        <div class="promo promo-applied">
+          <span style="color:#6EE7B7">✓</span>
+          <input value="TVPLUS50" />
+          <button class="btn-link" style="font-size:12px;color:var(--emerald)">Remove</button>
+        </div>
+
+        <div class="bdrow tot"><span>Total</span><b>₹1,668</b></div>
+
+        <button class="btn btn-primary btn-lg" style="width:100%;justify-content:center;margin-top:16px"
+          onclick="window.location='confirmation.html'">Pay ₹1,668 securely →</button>
+
+        <div class="row" style="gap:8px;justify-content:center;margin-top:14px;color:var(--text-3);font-size:11px">
+          <span>You earn</span><b style="color:var(--gold)">+ 84 ★ Plus points</b><span>on this booking</span>
+        </div>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<div id="footer"></div>
+<script>document.getElementById('footer').innerHTML = TVFooter();</script>
+<div id="bnav"></div>
+<script>document.getElementById('bnav').innerHTML = TVBottomNav('tickets');</script>
+<script>
+document.querySelectorAll('.pay').forEach(p => p.addEventListener('click', () => {
+  document.querySelectorAll('.pay.on').forEach(o => o.classList.remove('on'));
+  p.classList.add('on');
+}));
+</script>
+</body>
+</html>

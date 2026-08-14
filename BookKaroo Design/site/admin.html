@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TicketVerse — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/tv.css" />
+<style>
+.adm-shell { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - var(--nav-h)); }
+@media (max-width: 900px) { .adm-shell { grid-template-columns: 1fr; } .adm-side { display: none; } }
+
+.adm-side {
+  border-right: 1px solid var(--border);
+  padding: 20px 14px;
+  background: var(--bg-0);
+}
+.adm-side h5 { font-size: 10px; letter-spacing: 0.18em; color: var(--text-4); margin: 18px 8px 6px; text-transform: uppercase; font-weight: 600; }
+.adm-link {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; border-radius: var(--r-2);
+  font-size: 13px; color: var(--text-2); cursor: pointer;
+}
+.adm-link:hover { background: var(--surface); color: var(--text-1); }
+.adm-link.on { background: var(--surface-2); color: var(--text-1); border: 1px solid var(--border); }
+.adm-link .ic { width: 18px; height: 18px; opacity: 0.8; display: grid; place-items: center; }
+.adm-link .ct { margin-left: auto; font-family: var(--f-mono); font-size: 11px; color: var(--text-3); padding: 1px 6px; background: var(--surface); border-radius: 999px; }
+
+.adm-main { padding: 28px 32px; background: var(--bg-1); }
+@media (max-width: 700px) { .adm-main { padding: 20px 16px; } }
+.adm-head { display: flex; justify-content: space-between; align-items: end; margin-bottom: 24px; gap: 12px; flex-wrap: wrap; }
+.adm-head h1 { font-family: var(--f-display); font-size: 32px; margin: 0 0 4px; font-weight: 600; letter-spacing: -0.02em; }
+.adm-head p { color: var(--text-3); margin: 0; font-size: 13px; }
+.head-tools { display: flex; gap: 8px; align-items: center; }
+.range-tabs { display: inline-flex; padding: 4px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-pill); }
+.range-tabs button { padding: 6px 14px; border-radius: var(--r-pill); font-size: 12px; color: var(--text-3); }
+.range-tabs button.on { background: var(--bg-3); color: var(--text-1); box-shadow: var(--sh-1); }
+
+.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+@media (max-width: 1100px) { .kpi-grid { grid-template-columns: 1fr 1fr; } }
+
+.kpi {
+  padding: 20px; border-radius: var(--r-3);
+  background: var(--surface); border: 1px solid var(--border);
+  position: relative; overflow: hidden;
+}
+.kpi .lbl { font-size: 11px; color: var(--text-3); letter-spacing: 0.12em; text-transform: uppercase; }
+.kpi .num { font-family: var(--f-display); font-size: 38px; font-weight: 600; line-height: 1; margin-top: 10px; letter-spacing: -0.02em; }
+.kpi .delta { font-size: 12px; margin-top: 8px; display: flex; align-items: center; gap: 4px; color: var(--emerald); }
+.kpi .delta.dn { color: #FF6770; }
+.kpi .spark {
+  position: absolute; right: 16px; bottom: 16px; width: 100px; height: 38px;
+  display: flex; gap: 3px; align-items: end;
+}
+.kpi .spark span { flex: 1; background: var(--grad-violet); border-radius: 1px; min-height: 3px; opacity: .85; }
+.kpi.crimson .num em { color: var(--crimson-2); font-style: normal; }
+
+.row-2 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+@media (max-width: 1100px) { .row-2 { grid-template-columns: 1fr; } }
+
+.panel { padding: 22px; border-radius: var(--r-3); background: var(--surface); border: 1px solid var(--border); }
+.panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+.panel-head h3 { font-size: 15px; font-weight: 600; margin: 0; }
+.panel-head .sub { font-size: 12px; color: var(--text-3); }
+
+/* Bar chart */
+.chart {
+  height: 220px; display: grid; grid-template-columns: 30px 1fr; gap: 8px; margin-top: 8px;
+}
+.y-axis { display: flex; flex-direction: column; justify-content: space-between; font-family: var(--f-mono); font-size: 10px; color: var(--text-3); }
+.bars {
+  display: flex; gap: 8px; align-items: end; padding-bottom: 22px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0; height: 100%; justify-content: end; cursor: pointer; }
+.bar-col .stk { width: 100%; max-width: 26px; display: flex; flex-direction: column-reverse; gap: 1px; border-radius: 4px 4px 0 0; overflow: hidden; }
+.bar-col .stk i { display: block; }
+.bar-col .stk i.b1 { background: var(--violet); }
+.bar-col .stk i.b2 { background: var(--indigo); }
+.bar-col .stk i.b3 { background: var(--neon-cyan); }
+.bar-col:hover .stk { filter: brightness(1.2); }
+.bar-col .lbl { font-family: var(--f-mono); font-size: 10px; color: var(--text-3); margin-top: 6px; }
+
+/* Donut */
+.donut-wrap { display: grid; grid-template-columns: 140px 1fr; gap: 18px; align-items: center; }
+.donut { width: 140px; height: 140px; border-radius: 999px;
+  background: conic-gradient(var(--violet) 0 38%, var(--indigo) 38% 60%, var(--neon-cyan) 60% 78%, var(--gold) 78% 92%, var(--surface-3) 92% 100%);
+  position: relative;
+}
+.donut::before { content:''; position: absolute; inset: 22px; border-radius: 999px; background: var(--bg-1); }
+.donut .center { position: absolute; inset: 22px; display: grid; place-items: center; text-align: center; }
+.donut .center .n { font-family: var(--f-display); font-size: 22px; font-weight: 600; }
+.donut .center .l { font-size: 10px; color: var(--text-3); letter-spacing: 0.1em; }
+.legend-list { display: grid; gap: 6px; font-size: 13px; }
+.legend-list .li { display: flex; align-items: center; gap: 8px; color: var(--text-2); }
+.legend-list .sw { width: 10px; height: 10px; border-radius: 3px; }
+.legend-list .pct { margin-left: auto; font-family: var(--f-mono); font-size: 12px; color: var(--text-1); }
+
+/* Table */
+.tbl { width: 100%; border-collapse: separate; border-spacing: 0; }
+.tbl th { text-align: left; font-size: 11px; letter-spacing: 0.1em; color: var(--text-3); padding: 8px 12px; font-weight: 500; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+.tbl td { padding: 12px; font-size: 13px; border-bottom: 1px solid var(--border); }
+.tbl tr:last-child td { border-bottom: 0; }
+.tbl tr:hover td { background: var(--surface-2); }
+.tbl .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 500; }
+.tbl .pill.ok { background: rgba(52,211,153,0.14); color: #6EE7B7; }
+.tbl .pill.warn { background: rgba(251,191,36,0.14); color: #FCD34D; }
+.tbl .pill.fail { background: rgba(225, 29, 116,0.14); color: #FF6770; }
+
+.bookid { font-family: var(--f-mono); font-size: 12px; color: var(--text-2); }
+
+/* occupancy mini */
+.occ-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; }
+.occ-row .nm { font-size: 13px; flex: 0 0 140px; }
+.occ-row .br { flex: 1; height: 8px; border-radius: 4px; background: var(--surface-2); overflow: hidden; }
+.occ-row .br i { display: block; height: 100%; background: var(--grad-violet); border-radius: 4px; }
+.occ-row .pc { font-family: var(--f-mono); font-size: 11px; color: var(--text-1); flex: 0 0 40px; text-align: right; }
+
+/* Heatmap */
+.heat { display: grid; grid-template-columns: repeat(24, 1fr); gap: 3px; margin-top: 10px; }
+.heat .h-cell { aspect-ratio: 1; border-radius: 3px; background: var(--surface-2); }
+.heat .h-cell[data-v="1"] { background: rgba(168,85,247,0.18); }
+.heat .h-cell[data-v="2"] { background: rgba(168,85,247,0.36); }
+.heat .h-cell[data-v="3"] { background: rgba(168,85,247,0.54); }
+.heat .h-cell[data-v="4"] { background: rgba(168,85,247,0.78); }
+.heat .h-cell[data-v="5"] { background: var(--violet); }
+
+.alert {
+  display: flex; gap: 12px; padding: 12px 14px;
+  border-radius: var(--r-2); background: rgba(225, 29, 116,0.08); border: 1px solid rgba(225, 29, 116,0.22);
+  align-items: center; font-size: 13px;
+}
+.alert .ic { width: 28px; height: 28px; border-radius: 999px; background: rgba(225, 29, 116,0.2); color: #FF6770; display: grid; place-items: center; }
+</style>
+</head>
+<body data-screen-label="Admin Dashboard">
+<script src="assets/icons.js"></script>
+<script>TVTheme.init();</script>
+<div id="nav"></div>
+<script>document.getElementById('nav').innerHTML = TVNav('admin');</script>
+
+<div class="adm-shell">
+  <aside class="adm-side">
+    <h5>Operations</h5>
+    <div class="adm-link on"><div class="ic">▦</div>Overview</div>
+    <div class="adm-link"><div class="ic">📈</div>Sales<span class="ct">live</span></div>
+    <div class="adm-link"><div class="ic">🎬</div>Films<span class="ct">312</span></div>
+    <div class="adm-link"><div class="ic">🏟</div>Venues<span class="ct">86</span></div>
+    <div class="adm-link"><div class="ic">🎤</div>Events<span class="ct">48</span></div>
+    <h5>Customers</h5>
+    <div class="adm-link"><div class="ic">👤</div>Users</div>
+    <div class="adm-link"><div class="ic">★</div>Plus loyalty</div>
+    <div class="adm-link"><div class="ic">↩</div>Refunds<span class="ct">7</span></div>
+    <h5>Settings</h5>
+    <div class="adm-link"><div class="ic">⚙</div>Pricing rules</div>
+    <div class="adm-link"><div class="ic">🔔</div>Alerts</div>
+    <div class="adm-link"><div class="ic">🔑</div>API keys</div>
+  </aside>
+
+  <main class="adm-main">
+    <header class="adm-head">
+      <div>
+        <span class="eyebrow">OPS · MUMBAI WEST · LIVE</span>
+        <h1>Saturday, 9 May</h1>
+        <p>4 cinemas · 38 active screens · 421 shows scheduled today</p>
+      </div>
+      <div class="head-tools">
+        <div class="range-tabs">
+          <button>Today</button><button class="on">7d</button><button>30d</button><button>QTD</button>
+        </div>
+        <button class="btn btn-ghost btn-sm">Export</button>
+        <button class="btn btn-primary btn-sm">+ New show</button>
+      </div>
+    </header>
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="lbl">Gross sales · 7d</div>
+        <div class="num">₹84.2L</div>
+        <div class="delta">▲ 12.4% vs prev</div>
+        <div class="spark">
+          <span style="height:30%"></span><span style="height:48%"></span><span style="height:42%"></span><span style="height:60%"></span>
+          <span style="height:55%"></span><span style="height:78%"></span><span style="height:92%"></span>
+        </div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Tickets sold</div>
+        <div class="num">28,412</div>
+        <div class="delta">▲ 8.1%</div>
+        <div class="spark">
+          <span style="height:42%"></span><span style="height:50%"></span><span style="height:62%"></span><span style="height:55%"></span>
+          <span style="height:70%"></span><span style="height:80%"></span><span style="height:88%"></span>
+        </div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Avg occupancy</div>
+        <div class="num">71.3<span style="font-size:0.5em;color:var(--text-3)">%</span></div>
+        <div class="delta">▲ 4.2 pts</div>
+        <div class="spark">
+          <span style="height:55%"></span><span style="height:60%"></span><span style="height:48%"></span><span style="height:72%"></span>
+          <span style="height:75%"></span><span style="height:80%"></span><span style="height:82%"></span>
+        </div>
+      </div>
+      <div class="kpi crimson">
+        <div class="lbl">Refund rate</div>
+        <div class="num"><em>2.1%</em></div>
+        <div class="delta dn">▼ 0.4 pts (good)</div>
+        <div class="spark">
+          <span style="height:60%;background:var(--crimson-2)"></span><span style="height:55%;background:var(--crimson-2)"></span>
+          <span style="height:50%;background:var(--crimson-2)"></span><span style="height:48%;background:var(--crimson-2)"></span>
+          <span style="height:42%;background:var(--crimson-2)"></span><span style="height:38%;background:var(--crimson-2)"></span>
+          <span style="height:32%;background:var(--crimson-2)"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sales chart + breakdown -->
+    <div class="row-2" style="margin-bottom:16px">
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h3>Daily revenue · last 14 days</h3>
+            <div class="sub">By format · IMAX, 2D, 4DX</div>
+          </div>
+          <div class="row" style="gap:10px;font-size:12px;color:var(--text-2)">
+            <span class="row" style="gap:6px"><span style="width:10px;height:10px;border-radius:3px;background:var(--violet)"></span>IMAX</span>
+            <span class="row" style="gap:6px"><span style="width:10px;height:10px;border-radius:3px;background:var(--indigo)"></span>2D</span>
+            <span class="row" style="gap:6px"><span style="width:10px;height:10px;border-radius:3px;background:var(--neon-cyan)"></span>4DX</span>
+          </div>
+        </div>
+        <div class="chart">
+          <div class="y-axis"><span>₹15L</span><span>₹10L</span><span>₹5L</span><span>0</span></div>
+          <div class="bars" id="bars"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>Revenue by category</h3><span class="sub">7d</span></div>
+        <div class="donut-wrap">
+          <div class="donut">
+            <div class="center"><div><div class="n">₹84.2L</div><div class="l">TOTAL</div></div></div>
+          </div>
+          <ul class="legend-list" style="list-style:none;padding:0;margin:0">
+            <li class="li"><span class="sw" style="background:var(--violet)"></span>Movies<span class="pct">38%</span></li>
+            <li class="li"><span class="sw" style="background:var(--indigo)"></span>IPL Cricket<span class="pct">22%</span></li>
+            <li class="li"><span class="sw" style="background:var(--neon-cyan)"></span>Concerts<span class="pct">18%</span></li>
+            <li class="li"><span class="sw" style="background:var(--gold)"></span>Comedy<span class="pct">14%</span></li>
+            <li class="li"><span class="sw" style="background:var(--surface-3)"></span>Other<span class="pct">8%</span></li>
+          </ul>
+        </div>
+
+        <div style="margin-top:18px">
+          <div class="alert">
+            <div class="ic">!</div>
+            <div>
+              <b>Mirage Protocol · Audi 4 (PVR Icon)</b> — 5:15 PM show overbooked by 2.
+              <a href="#" style="color:#FF6770">Resolve →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Occupancy + heatmap -->
+    <div class="row-2" style="margin-bottom:16px">
+      <div class="panel">
+        <div class="panel-head"><h3>Top venues by occupancy</h3><span class="sub">Today</span></div>
+        <div>
+          <div class="occ-row"><div class="nm">PVR Icon · Phoenix</div><div class="br"><i style="width:92%"></i></div><div class="pc">92%</div></div>
+          <div class="occ-row"><div class="nm">INOX Insignia · R-City</div><div class="br"><i style="width:84%"></i></div><div class="pc">84%</div></div>
+          <div class="occ-row"><div class="nm">PVR Le Reve · Bandra</div><div class="br"><i style="width:78%;background:linear-gradient(90deg,#6366F1,#22D3EE)"></i></div><div class="pc">78%</div></div>
+          <div class="occ-row"><div class="nm">Cinépolis · Viviana</div><div class="br"><i style="width:71%"></i></div><div class="pc">71%</div></div>
+          <div class="occ-row"><div class="nm">Maison · BKC</div><div class="br"><i style="width:64%;background:linear-gradient(90deg,#F5C56B,#E11D74)"></i></div><div class="pc">64%</div></div>
+          <div class="occ-row"><div class="nm">SPI Sathyam · Phoenix</div><div class="br"><i style="width:58%"></i></div><div class="pc">58%</div></div>
+          <div class="occ-row"><div class="nm">Carnival · Wadala</div><div class="br"><i style="width:42%;background:linear-gradient(90deg,#FBBF24,#FF6770)"></i></div><div class="pc">42%</div></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <div><h3>Booking heatmap</h3><div class="sub">Hour × day · last 7d</div></div>
+          <span class="sub">▣ low → ■ high</span>
+        </div>
+        <div class="heat" id="heat"></div>
+        <div class="row" style="justify-content:space-between;margin-top:8px;font-family:var(--f-mono);font-size:10px;color:var(--text-3)">
+          <span>00</span><span>06</span><span>12</span><span>18</span><span>23</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent bookings table -->
+    <div class="panel">
+      <div class="panel-head">
+        <div><h3>Recent bookings</h3><div class="sub">Live · refresh every 30s</div></div>
+        <div class="row" style="gap:8px">
+          <button class="btn btn-ghost btn-sm">Filter</button>
+          <button class="btn btn-ghost btn-sm">Export CSV</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="tbl">
+          <thead><tr>
+            <th>Booking ID</th><th>Show</th><th>Venue</th><th>Time</th><th>Seats</th><th>Amount</th><th>Status</th><th></th>
+          </tr></thead>
+          <tbody>
+            <tr><td class="bookid">TV-MIR-04582</td><td>Mirage Protocol</td><td>PVR Icon · Phoenix</td><td>5:15 PM</td><td>G7, G8</td><td>₹1,668</td><td><span class="pill ok">Confirmed</span></td><td><button class="btn-link" style="font-size:12px">View</button></td></tr>
+            <tr><td class="bookid">TV-AAK-09810</td><td>Aakhri Vaada</td><td>Cinépolis · Viviana</td><td>9:30 PM</td><td>D5–7</td><td>₹2,340</td><td><span class="pill ok">Confirmed</span></td><td><button class="btn-link" style="font-size:12px">View</button></td></tr>
+            <tr><td class="bookid">TV-CLD-22011</td><td>Coldplay Live</td><td>DY Patil · Navi Mumbai</td><td>7:00 PM</td><td>D34</td><td>₹4,500</td><td><span class="pill warn">Hold · 8m</span></td><td><button class="btn-link" style="font-size:12px">Release</button></td></tr>
+            <tr><td class="bookid">TV-OPP-09202</td><td>Oppenheimer: Reverie</td><td>PVR Icon · Phoenix</td><td>9:00 PM</td><td>F12, F13</td><td>₹1,980</td><td><span class="pill ok">Confirmed</span></td><td><button class="btn-link" style="font-size:12px">View</button></td></tr>
+            <tr><td class="bookid">TV-LEI-04412</td><td>Leila &amp; The Tide</td><td>SPI Sathyam · Chennai</td><td>6:30 PM</td><td>B8</td><td>₹360</td><td><span class="pill ok">Confirmed</span></td><td><button class="btn-link" style="font-size:12px">View</button></td></tr>
+            <tr><td class="bookid">TV-PHX-04392</td><td>Phoenix Down</td><td>PVR Le Reve · Bandra</td><td>8:45 PM</td><td>—</td><td>₹780</td><td><span class="pill fail">Refunded</span></td><td><button class="btn-link" style="font-size:12px">Detail</button></td></tr>
+            <tr><td class="bookid">TV-IPL-11228</td><td>MI vs CSK</td><td>Wankhede</td><td>7:30 PM</td><td>L4 · 22-24</td><td>₹6,300</td><td><span class="pill ok">Confirmed</span></td><td><button class="btn-link" style="font-size:12px">View</button></td></tr>
+            <tr><td class="bookid">TV-VIR-44210</td><td>Vir Das · Mind Fool</td><td>NSCI Dome</td><td>9:00 PM</td><td>P12, P13</td><td>₹1,998</td><td><span class="pill warn">Pending payment</span></td><td><button class="btn-link" style="font-size:12px">Nudge</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+// Stacked bars
+const barData = [
+  [4,7,1],[3,8,1],[5,9,2],[6,8,1],[4,11,2],[8,13,3],[10,14,4],
+  [5,8,1],[4,9,2],[6,10,2],[7,11,3],[9,12,3],[11,13,4],[12,14,4]
+];
+const max = 22;
+document.getElementById('bars').innerHTML = barData.map((d, i)=>{
+  const total = d[0]+d[1]+d[2];
+  const totalH = (total/max)*180;
+  return `<div class="bar-col" title="${total}L">
+    <div class="stk" style="height:${totalH}px">
+      <i class="b3" style="height:${(d[2]/total)*100}%"></i>
+      <i class="b2" style="height:${(d[1]/total)*100}%"></i>
+      <i class="b1" style="height:${(d[0]/total)*100}%"></i>
+    </div>
+    <span class="lbl">${i<7?'M'+(i+1):'T'+(i-6)}</span>
+  </div>`;
+}).join('');
+
+// Heatmap (7 rows × 24 cols = 168)
+const heat = document.getElementById('heat');
+heat.style.gridTemplateRows = 'repeat(7, 1fr)';
+let hh = '';
+for (let r=0; r<7; r++) {
+  for (let c=0; c<24; c++) {
+    let v = 0;
+    if (c >= 9 && c <= 11) v = 1;
+    if (c >= 14 && c <= 16) v = 2;
+    if (c >= 17 && c <= 19) v = r >= 5 ? 5 : 4;
+    if (c === 20 || c === 21) v = r >= 5 ? 5 : 3;
+    if (c >= 22) v = r >= 5 ? 4 : 2;
+    if (c < 8) v = 0;
+    hh += `<span class="h-cell" data-v="${v}"></span>`;
+  }
+}
+heat.innerHTML = hh;
+</script>
+</body>
+</html>

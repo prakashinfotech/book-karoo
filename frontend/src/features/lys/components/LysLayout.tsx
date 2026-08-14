@@ -1,0 +1,164 @@
+import { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, PlusCircle, User, Home, LogOut, Menu, X } from 'lucide-react';
+import { cn } from '@/shared/lib/utils';
+import { useAuthStore } from '@/features/auth/store/authStore';
+
+const NAV = [
+  { label: 'My Events',    icon: LayoutDashboard, href: '/list-your-show/my-events' },
+  { label: 'Create Event', icon: PlusCircle,      href: '/list-your-show/create' },
+  { label: 'My Profile',   icon: User,            href: '/list-your-show/profile' },
+] as const;
+
+export function LysLayout({ children }: { children: React.ReactNode }) {
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const { user, clearAuth } = useAuthStore();
+  const [collapsed, setCollapsed]   = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Close mobile nav whenever the route changes
+  useEffect(() => { setMobileOpen(false); }, [pathname]);
+
+  function handleLogout() {
+    clearAuth();
+    navigate('/');
+  }
+
+  // On mobile the sidebar is always "expanded" (full labels); collapsed only applies on desktop
+  const showLabel = !collapsed || mobileOpen;
+
+  return (
+    <div className="flex min-h-screen bg-bg-surface font-sans">
+
+      {/* ── Mobile top bar (hidden on md+) ─────────────────────────────── */}
+      <div className="md:hidden fixed top-0 inset-x-0 h-14 bg-bg-base border-b border-border-default flex items-center px-4 z-40">
+        <span className="font-display font-bold text-base text-text-primary">
+          Book<span className="text-accent-crimson">Karoo</span>
+          <span className="text-accent-indigo text-xs ml-1.5 font-sans font-normal">LYS</span>
+        </span>
+        <button
+          onClick={() => setMobileOpen(true)}
+          aria-label="Open navigation menu"
+          className="ml-auto text-text-muted hover:text-text-primary p-1.5 rounded"
+        >
+          <Menu size={22} />
+        </button>
+      </div>
+
+      {/* ── Backdrop (mobile only, blocks tap-through) ──────────────────── */}
+      {mobileOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black/50 z-40"
+          aria-hidden="true"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      {/* ── Sidebar ─────────────────────────────────────────────────────── */}
+      {/*
+        Mobile  : fixed overlay, slides in from left (translate-x), z-50
+        Desktop : relative flex-child, width collapses/expands, translate-x always 0
+      */}
+      <aside
+        className={cn(
+          'flex flex-col flex-shrink-0 bg-bg-base border-r border-border-default z-50',
+          // Mobile positioning
+          'fixed inset-y-0 left-0 w-[260px]',
+          'transition-transform duration-200',
+          mobileOpen ? 'translate-x-0' : '-translate-x-full',
+          // Desktop overrides (md+): back to in-flow, no transform, collapsible width
+          'md:relative md:translate-x-0',
+          'md:transition-[width] md:duration-[220ms]',
+          collapsed ? 'md:w-[60px]' : 'md:w-[240px]',
+        )}
+      >
+        {/* Sidebar header */}
+        <div className="flex items-center gap-3 px-4 py-4 border-b border-border-default flex-shrink-0">
+          {showLabel && (
+            <span className="font-display font-bold text-base text-text-primary truncate">
+              Book<span className="text-accent-crimson">Karoo</span>
+              <span className="text-accent-indigo text-xs ml-1.5 font-sans font-normal">LYS</span>
+            </span>
+          )}
+          {/* Mobile: X to close; Desktop: toggle collapse */}
+          <button
+            onClick={() => mobileOpen ? setMobileOpen(false) : setCollapsed(!collapsed)}
+            aria-label={mobileOpen ? 'Close menu' : collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            className="ml-auto text-text-muted hover:text-text-primary p-1 rounded flex-shrink-0"
+          >
+            {mobileOpen ? <X size={18} /> : collapsed ? <Menu size={18} /> : <X size={18} />}
+          </button>
+        </div>
+
+        {/* Nav — scrollable in case of overflow */}
+        <nav className="py-3 px-2 space-y-0.5 overflow-y-auto flex-1">
+          {NAV.map(({ label, icon: Icon, href }) => {
+            const active = pathname.startsWith(href);
+            return (
+              <Link
+                key={href}
+                to={href}
+                title={!showLabel ? label : undefined}
+                className={cn(
+                  'flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-colors duration-150',
+                  active
+                    ? 'bg-accent-indigo/12 text-accent-indigo border border-accent-indigo/25'
+                    : 'text-text-secondary hover:text-text-primary hover:bg-bg-surface2',
+                  !showLabel && 'justify-center px-2',
+                )}
+              >
+                <Icon size={16} className="flex-shrink-0" />
+                {showLabel && label}
+              </Link>
+            );
+          })}
+
+          <div className="border-t border-border-default my-1.5 mx-1" />
+
+          <Link
+            to="/"
+            title={!showLabel ? 'View Site' : undefined}
+            className={cn(
+              'flex items-center gap-3 px-3 py-2.5 rounded-md text-sm text-text-secondary hover:text-text-primary hover:bg-bg-surface2 transition-colors',
+              !showLabel && 'justify-center px-2',
+            )}
+          >
+            <Home size={16} className="flex-shrink-0" />
+            {showLabel && 'View Site'}
+          </Link>
+
+          <button
+            onClick={handleLogout}
+            title={!showLabel ? 'Sign out' : undefined}
+            className={cn(
+              'flex items-center gap-3 px-3 py-2.5 rounded-md text-sm text-text-muted hover:text-semantic-error hover:bg-semantic-error/08 transition-colors w-full',
+              !showLabel && 'justify-center px-2',
+            )}
+          >
+            <LogOut size={16} className="flex-shrink-0" />
+            {showLabel && 'Sign out'}
+          </button>
+        </nav>
+
+        {/* Email footer */}
+        <div className={cn('pb-3 px-4 flex-shrink-0', !showLabel && 'px-2 flex justify-center')}>
+          {showLabel && (
+            <p className="text-[11px] text-text-muted truncate">{user?.email}</p>
+          )}
+        </div>
+      </aside>
+
+      {/* ── Main content ────────────────────────────────────────────────── */}
+      {/* pt-14 offsets the mobile top bar; removed on md+ */}
+      <main className="flex-1 overflow-auto bg-bg-surface min-w-0 pt-14 md:pt-0">
+        <div className="border-b border-border-default bg-gradient-to-r from-accent-indigo/10 to-accent-purple/5 px-4 sm:px-6 py-2.5 flex items-center gap-2">
+          <span className="text-[11px] font-semibold text-accent-indigo tracking-wide uppercase">
+            🎭 ListYourShow — Organizer Portal
+          </span>
+        </div>
+        {children}
+      </main>
+    </div>
+  );
+}

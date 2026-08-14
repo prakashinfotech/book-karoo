@@ -1,0 +1,14 @@
+**/.vs
+**/.vscode
+**/bin
+**/obj
+**/out
+**/.git
+**/.gitignore
+**/node_modules
+**/*.user
+**/*.suo
+**/*.md
+**/tests
+**/database
+HashTool

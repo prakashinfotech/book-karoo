@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TicketVerse — My Bookings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/tv.css" />
+<style>
+.profile-head {
+  display: grid; grid-template-columns: auto 1fr auto; gap: 24px; align-items: center;
+  padding: 32px 0;
+  border-bottom: 1px solid var(--border);
+}
+@media (max-width: 700px) { .profile-head { grid-template-columns: auto 1fr; } .profile-head .plus { grid-column: 1/-1; } }
+
+.av-lg {
+  width: 80px; height: 80px; border-radius: 999px;
+  background: var(--grad-violet);
+  display: grid; place-items: center; color: white; font-weight: 600;
+  font-family: var(--f-display); font-size: 30px;
+  box-shadow: var(--sh-glow-violet);
+}
+.profile-head h1 { font-family: var(--f-display); margin: 0 0 4px; font-size: 28px; font-weight: 600; letter-spacing: -0.02em; }
+.profile-head .meta { color: var(--text-3); font-size: 13px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+.plus-card {
+  padding: 14px 18px; border-radius: var(--r-3);
+  background: linear-gradient(135deg, rgba(245,197,107,0.18), rgba(225, 29, 116,0.18));
+  border: 1px solid rgba(245,197,107,0.3);
+}
+.plus-card .lbl { font-size: 10px; letter-spacing: 0.16em; color: var(--gold); }
+.plus-card .pts { font-family: var(--f-display); font-size: 24px; font-weight: 600; }
+.plus-card .sub { font-size: 11px; color: var(--text-3); }
+
+/* Tabs */
+.tabbar { display: flex; gap: 4px; padding: 18px 0 8px; border-bottom: 1px solid var(--border); }
+.tab { padding: 10px 16px; font-size: 14px; color: var(--text-3); font-weight: 500; border-radius: 8px 8px 0 0; cursor: pointer; position: relative; }
+.tab.on { color: var(--text-1); }
+.tab.on::after { content:''; position: absolute; left: 12px; right: 12px; bottom: -9px; height: 2px; background: var(--grad-violet); border-radius: 2px; }
+.tab .ct { font-family: var(--f-mono); font-size: 11px; color: var(--text-3); margin-left: 6px; padding: 1px 6px; border-radius: 999px; background: var(--surface); }
+.tab.on .ct { color: var(--text-1); background: var(--surface-2); }
+
+.cards-list { padding: 28px 0 80px; display: grid; gap: 14px; }
+
+.bcard {
+  display: grid; grid-template-columns: 96px 1fr auto; gap: 18px; align-items: center;
+  padding: 16px;
+  border-radius: var(--r-3);
+  background: var(--surface); border: 1px solid var(--border);
+  transition: border-color .2s, transform .2s;
+}
+.bcard:hover { border-color: var(--border-2); transform: translateY(-2px); }
+@media (max-width: 700px) { .bcard { grid-template-columns: 72px 1fr; } .bcard .actions { grid-column: 1/-1; } }
+
+.bcard .mp { width: 96px; aspect-ratio: 2/3; border-radius: var(--r-2); flex-shrink: 0; }
+@media (max-width: 700px) { .bcard .mp { width: 72px; } }
+
+.bcard .ttl { font-family: var(--f-display); font-size: 22px; font-weight: 600; line-height: 1.1; letter-spacing: -0.02em; }
+.bcard .when { color: var(--text-2); font-size: 13px; margin-top: 4px; }
+.bcard .where { color: var(--text-3); font-size: 13px; margin-top: 2px; }
+.bcard .extras { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+
+.bcard .actions { display: flex; flex-direction: column; gap: 8px; align-items: end; }
+.bcard .seats { font-family: var(--f-mono); font-size: 11px; color: var(--text-3); }
+.bcard .total { font-family: var(--f-display); font-size: 22px; font-weight: 600; }
+
+.bcard .ribbon-l { font-size: 11px; padding: 3px 10px; border-radius: 999px; font-weight: 600; }
+.ribbon-l.up { background: rgba(99,102,241,0.16); color: #A5B0FF; border: 1px solid rgba(99,102,241,0.3); }
+.ribbon-l.live { background: rgba(225, 29, 116,0.16); color: #FF6770; border: 1px solid rgba(225, 29, 116,0.3); }
+.ribbon-l.past { background: var(--surface-2); color: var(--text-3); border: 1px solid var(--border); }
+.ribbon-l.cncl { background: rgba(255,255,255,0.04); color: var(--text-3); border: 1px solid var(--border); text-decoration: line-through; }
+
+/* small countdown row */
+.countdown { display: flex; gap: 6px; margin-top: 10px; align-items: center; font-size: 11px; color: var(--text-3); }
+.countdown b { color: var(--text-1); font-family: var(--f-mono); font-weight: 500; }
+
+/* stats row */
+.stats {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  margin-top: 24px;
+}
+@media (max-width: 700px) { .stats { grid-template-columns: 1fr 1fr; } }
+.stat { padding: 18px; border-radius: var(--r-3); background: var(--surface); border: 1px solid var(--border); }
+.stat .num { font-family: var(--f-display); font-size: 30px; font-weight: 600; line-height: 1; }
+.stat .lbl { font-size: 11px; color: var(--text-3); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 6px; }
+.stat .delta { font-size: 11px; color: var(--emerald); margin-top: 6px; }
+
+/* mini timeline */
+.timeline { display: flex; gap: 6px; align-items: end; height: 30px; margin-top: 8px; }
+.timeline span { flex: 1; background: var(--surface-2); border-radius: 2px; }
+
+.empty {
+  text-align: center; padding: 56px 24px; border-radius: var(--r-4);
+  background: var(--surface); border: 1px dashed var(--border-2);
+  color: var(--text-3);
+}
+.empty .ic { font-size: 36px; margin-bottom: 12px; }
+
+</style>
+</head>
+<body data-screen-label="Profile / My Bookings">
+<script src="assets/icons.js"></script>
+<script>TVTheme.init();</script>
+<div id="nav"></div>
+<script>document.getElementById('nav').innerHTML = TVNav();</script>
+
+<main class="container">
+  <header class="profile-head">
+    <div class="av-lg">AR</div>
+    <div>
+      <h1>Aarav Rastogi</h1>
+      <div class="meta">
+        <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c0a1a1b2a1b6eeb280b3b4b5a4a9afeea9ae">[email&#160;protected]</a></span>
+        <span style="width:3px;height:3px;border-radius:999px;background:var(--text-4);display:inline-block"></span>
+        <span>+91 98213 04567</span>
+        <span style="width:3px;height:3px;border-radius:999px;background:var(--text-4);display:inline-block"></span>
+        <span>Mumbai, IN</span>
+      </div>
+      <div class="row" style="margin-top:10px;gap:6px">
+        <span class="chip chip-amber">★ Plus member</span>
+        <span class="chip chip-violet">Joined Mar 2024</span>
+        <span class="chip">Verified</span>
+      </div>
+    </div>
+    <div class="plus-card">
+      <div class="lbl">★ PLUS POINTS</div>
+      <div class="pts">2,148</div>
+      <div class="sub">Worth ≈ ₹430 · Earn 84 more this booking</div>
+    </div>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><div class="num">62</div><div class="lbl">Bookings · 2026</div><div class="delta">+ 14 vs 2025</div></div>
+    <div class="stat"><div class="num">₹38,420</div><div class="lbl">Spent this year</div><div class="delta">23% on IMAX</div></div>
+    <div class="stat"><div class="num">14</div><div class="lbl">Different venues</div><div class="delta">PVR Icon — favourite</div></div>
+    <div class="stat"><div class="num">9.0★</div><div class="lbl">Avg rating given</div></div>
+  </div>
+
+  <div class="tabbar">
+    <button class="tab on">Upcoming<span class="ct">3</span></button>
+    <button class="tab">Past<span class="ct">59</span></button>
+    <button class="tab">Cancelled<span class="ct">2</span></button>
+    <button class="tab">Watchlist<span class="ct">12</span></button>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+      <button class="btn btn-ghost btn-sm">Filter · year</button>
+      <button class="btn btn-ghost btn-sm">Export CSV</button>
+    </div>
+  </div>
+
+  <section class="cards-list">
+
+    <!-- Upcoming -->
+    <div class="bcard">
+      <div class="poster mp t-7"><div class="stripes"></div></div>
+      <div>
+        <span class="ribbon-l up">UPCOMING · TODAY</span>
+        <div class="ttl" style="margin-top:8px">Mirage Protocol</div>
+        <div class="when">Today · 5:15 PM · IMAX · 2h 28m</div>
+        <div class="where">PVR Icon · Phoenix Marketcity · Audi 4</div>
+        <div class="extras">
+          <span class="chip">G7, G8 · Executive</span>
+          <span class="chip chip-violet">Atmos</span>
+          <span class="chip chip-emerald">F&amp;B included</span>
+        </div>
+        <div class="countdown">⏱ <b>3h 22m</b> · Free reschedule until 1:15 PM</div>
+      </div>
+      <div class="actions">
+        <span class="seats">TV-MIR-04582</span>
+        <div class="total">₹1,668</div>
+        <a class="btn btn-primary btn-sm" href="confirmation.html">View ticket</a>
+        <button class="btn btn-ghost btn-sm">Reschedule</button>
+      </div>
+    </div>
+
+    <div class="bcard">
+      <div class="poster mp t-2"><div class="stripes"></div></div>
+      <div>
+        <span class="ribbon-l up">UPCOMING · SAT</span>
+        <div class="ttl" style="margin-top:8px">Aakhri Vaada</div>
+        <div class="when">Sat 11 May · 9:30 PM · 4DX · 2h 49m</div>
+        <div class="where">Cinépolis · Viviana Mall · Audi 7</div>
+        <div class="extras">
+          <span class="chip">D5, D6, D7 · Premium</span>
+          <span class="chip chip-amber">4DX · Motion seats</span>
+        </div>
+      </div>
+      <div class="actions">
+        <span class="seats">TV-AAK-09810</span>
+        <div class="total">₹2,340</div>
+        <a class="btn btn-ghost btn-sm">View ticket</a>
+        <button class="btn btn-ghost btn-sm">Cancel</button>
+      </div>
+    </div>
+
+    <div class="bcard">
+      <div class="poster mp t-3"><div class="stripes"></div></div>
+      <div>
+        <span class="ribbon-l live">LIVE · CONCERT</span>
+        <div class="ttl" style="margin-top:8px">Coldplay — Music of the Spheres</div>
+        <div class="when">Mon 19 Jan · 7:00 PM · Doors 5:30 PM</div>
+        <div class="where">DY Patil Stadium · Navi Mumbai · Standing East · D34</div>
+        <div class="extras">
+          <span class="chip chip-glow">VIP wristband</span>
+          <span class="chip">Tier 2 · Standing</span>
+        </div>
+      </div>
+      <div class="actions">
+        <span class="seats">TV-CLD-22011</span>
+        <div class="total">₹4,500</div>
+        <a class="btn btn-ghost btn-sm">View pass</a>
+        <button class="btn btn-ghost btn-sm">Transfer</button>
+      </div>
+    </div>
+
+    <!-- Section heading: Past -->
+    <h3 style="font-family:var(--f-display);font-size:18px;margin:32px 0 0;font-weight:600">Recent · past 30 days</h3>
+
+    <div class="bcard">
+      <div class="poster mp t-1"><div class="stripes"></div></div>
+      <div>
+        <span class="ribbon-l past">PAST · APR 28</span>
+        <div class="ttl" style="margin-top:8px">Oppenheimer: Reverie</div>
+        <div class="when">Sun 28 Apr · 9:00 PM · IMAX</div>
+        <div class="where">PVR Icon · Phoenix Marketcity · Audi 4</div>
+        <div class="extras">
+          <span class="chip">F12, F13 · Recliner</span>
+          <span class="chip chip-amber">⭐ You rated 9</span>
+        </div>
+      </div>
+      <div class="actions">
+        <span class="seats">TV-OPP-09201</span>
+        <div class="total">₹1,980</div>
+        <button class="btn btn-ghost btn-sm">Book again</button>
+        <button class="btn-link" style="font-size:12px">Download invoice</button>
+      </div>
+    </div>
+
+    <div class="bcard">
+      <div class="poster mp t-5"><div class="stripes"></div></div>
+      <div>
+        <span class="ribbon-l past">PAST · APR 14</span>
+        <div class="ttl" style="margin-top:8px">Leila &amp; The Tide</div>
+        <div class="when">Sun 14 Apr · 6:30 PM · 2D · Tamil</div>
+        <div class="where">SPI Sathyam · Express Avenue, Chennai</div>
+        <div class="extras">
+          <span class="chip">B8 · Premium</span>
+        </div>
+      </div>
+      <div class="actions">
+        <span class="seats">TV-LEI-04412</span>
+        <div class="total">₹360</div>
+        <button class="btn-link" style="font-size:12px">Rate &amp; review</button>
+      </div>
+    </div>
+
+    <div class="bcard">
+      <div class="poster mp t-4"><div class="stripes"></div></div>
+      <div>
+        <span class="ribbon-l cncl">CANCELLED · APR 02</span>
+        <div class="ttl" style="margin-top:8px">Phoenix Down</div>
+        <div class="when">Tue 02 Apr · 8:45 PM</div>
+        <div class="where">PVR Le Reve · Bandra · Audi 2</div>
+        <div class="extras">
+          <span class="chip">Refund of ₹780 to UPI · 2 days</span>
+        </div>
+      </div>
+      <div class="actions">
+        <span class="seats">TV-PHX-04392</span>
+        <div class="total" style="text-decoration:line-through;color:var(--text-3)">₹780</div>
+        <button class="btn-link" style="font-size:12px">Refund details</button>
+      </div>
+    </div>
+
+    <button class="btn btn-ghost" style="justify-self:center;margin-top:18px">Load 56 more →</button>
+  </section>
+</main>
+
+<div id="footer"></div>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>document.getElementById('footer').innerHTML = TVFooter();</script>
+<div id="bnav"></div>
+<script>document.getElementById('bnav').innerHTML = TVBottomNav('tickets');</script>
+</body>
+</html>

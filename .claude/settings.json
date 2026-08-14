@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(npm ci:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx vite:*)",
+      "Bash(dotnet:*)",
+      "Bash(git:*)",
+      "Bash(mkdir:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(supabase:*)",
+      "Edit",
+      "Write",
+      "Read"
+    ],
+    "deny": [
+      "Bash(rm -rf /:*)",
+      "Bash(curl * | sh:*)",
+      "Bash(* | bash:*)",
+      "Bash(git push --force:*)"
+    ]
+  },
+  "env": {
+    "PROJECT_NAME": "BookKaroo"
+  },
+  "hints": {
+    "projectType": "Full-stack monorepo — .NET 8 backend, React 18 + Vite frontend",
+    "primaryBranch": "develop",
+    "releaseBranch": "main",
+    "backendRoot": "backend/src/BookKaroo.Api",
+    "frontendRoot": "frontend"
+  }
+}

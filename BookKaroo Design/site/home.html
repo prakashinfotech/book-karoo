@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TicketVerse — Home</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/tv.css" />
+<style>
+.hero {
+  position: relative;
+  margin: 24px 0 56px;
+  border-radius: var(--r-5);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  min-height: 540px;
+  background: var(--grad-hero), linear-gradient(135deg, #1a0e2e 0%, #0a0e1a 70%);
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(135deg, rgba(255,255,255,0.03) 0 2px, transparent 2px 18px),
+    radial-gradient(70% 80% at 75% 30%, rgba(168,85,247,0.45), transparent 60%),
+    radial-gradient(50% 50% at 20% 80%, rgba(225, 29, 116,0.35), transparent 60%);
+}
+.hero-noise { position: absolute; inset: 0; opacity: .35;
+  background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size: 3px 3px; mix-blend-mode: overlay;
+}
+.hero-inner {
+  position: relative; padding: 56px 56px 48px;
+  display: grid; grid-template-columns: 1.3fr 1fr; gap: 56px; align-items: center;
+  min-height: 540px;
+}
+.hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; }
+.hero h1 {
+  font-family: var(--f-display);
+  font-size: clamp(40px, 5.6vw, 76px);
+  font-weight: 600; letter-spacing: -0.025em; line-height: 1;
+  margin: 18px 0 14px;
+}
+.hero h1 em { font-style: italic; color: #FFD7E0; }
+.hero-tag { color: var(--text-2); font-size: 17px; max-width: 520px; line-height: 1.5; }
+.hero-meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0 28px; }
+.hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+.hero-poster {
+  position: relative; aspect-ratio: 2/3; max-width: 320px; justify-self: end;
+  border-radius: var(--r-4); overflow: hidden;
+  background: linear-gradient(135deg, #2a1a3d, #4c1d95 80%);
+  box-shadow: var(--sh-3), 0 0 80px -20px rgba(168,85,247,0.6);
+  border: 1px solid rgba(255,255,255,0.1);
+  transform: rotate(-2deg);
+}
+.hero-poster::before {
+  content: ''; position: absolute; inset: 0;
+  background: repeating-linear-gradient(135deg, rgba(255,255,255,0.06) 0 2px, transparent 2px 14px);
+}
+.hero-poster .pname {
+  position: absolute; left: 18px; bottom: 18px; right: 18px;
+  font-family: var(--f-display); font-size: 28px; line-height: 1; font-weight: 600;
+}
+.hero-poster .ptag { position: absolute; left: 18px; top: 18px; font-family: var(--f-mono); font-size: 10px; letter-spacing: 0.16em; color: rgba(255,255,255,0.7); }
+.hero-dots { display: flex; gap: 6px; margin-top: 22px; }
+.hero-dots span { width: 28px; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.15); }
+.hero-dots span.on { background: white; }
+.hero-arrows { position: absolute; right: 24px; bottom: 24px; display: flex; gap: 8px; }
+.hero-arrow { width: 40px; height: 40px; border-radius: 999px; display: grid; place-items: center;
+  background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: white;
+  backdrop-filter: blur(10px); transition: background .2s; }
+.hero-arrow:hover { background: rgba(255,255,255,0.2); }
+.hero-arrow svg { width: 18px; height: 18px; }
+@media (max-width: 900px) {
+  .hero-inner { grid-template-columns: 1fr; padding: 32px 24px 40px; gap: 24px; min-height: auto; }
+  .hero-poster { display: none; }
+  .hero { min-height: auto; }
+}
+
+.cat-strip { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 56px; }
+.cat-card {
+  padding: 20px; border-radius: var(--r-3);
+  background: var(--surface); border: 1px solid var(--border);
+  display: flex; flex-direction: column; justify-content: space-between; min-height: 120px;
+  transition: transform .2s, border-color .2s, background .2s;
+}
+.cat-card:hover { transform: translateY(-2px); border-color: var(--border-2); }
+.cat-card .cn { font-family: var(--f-display); font-size: 22px; font-weight: 600; }
+.cat-card .cs { font-size: 12px; color: var(--text-3); }
+.cat-card .cdot { width: 8px; height: 8px; border-radius: 999px; background: var(--crimson-2); }
+@media (max-width: 1100px) { .cat-strip { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 600px) { .cat-strip { grid-template-columns: repeat(2, 1fr); } }
+
+/* IPL strip */
+.ipl-strip {
+  margin: 32px 0 56px; position: relative;
+  border-radius: var(--r-4); overflow: hidden;
+  border: 1px solid var(--border);
+  background:
+    radial-gradient(60% 100% at 100% 50%, rgba(245,197,107,0.2), transparent),
+    linear-gradient(110deg, #1a0a05 0%, #2d0a0e 60%, #4c1d95 120%);
+  padding: 32px 36px;
+  display: grid; grid-template-columns: 1fr auto; gap: 32px; align-items: center;
+}
+.ipl-strip h3 { font-family: var(--f-display); font-size: 32px; margin: 0 0 6px; font-weight: 700; }
+.ipl-strip p { color: var(--text-2); margin: 0; font-size: 14px; }
+.ipl-tag { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.18em; color: var(--gold); text-transform: uppercase; }
+.ipl-fixtures { display: flex; gap: 8px; flex-wrap: wrap; }
+.ipl-match { padding: 10px 14px; border-radius: var(--r-2); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); font-size: 12px; min-width: 150px; }
+.ipl-match .vs { font-weight: 600; }
+.ipl-match .when { color: var(--text-3); font-size: 11px; margin-top: 2px; }
+@media (max-width: 800px) { .ipl-strip { grid-template-columns: 1fr; padding: 24px; } }
+
+/* Event card (wider tile) */
+.evt-card {
+  border-radius: var(--r-3); overflow: hidden;
+  background: var(--surface); border: 1px solid var(--border);
+  transition: transform .2s, border-color .2s;
+}
+.evt-card:hover { transform: translateY(-2px); border-color: var(--border-2); }
+.evt-img { aspect-ratio: 4/3; position: relative; }
+.evt-img .stripes { position: absolute; inset: 0; background-image: repeating-linear-gradient(135deg, rgba(255,255,255,0.05) 0 2px, transparent 2px 14px); }
+.evt-img .tag { position: absolute; top: 12px; left: 12px; }
+.evt-meta { padding: 14px; }
+.evt-meta h4 { margin: 0; font-size: 15px; font-weight: 600; }
+.evt-meta p { margin: 4px 0 0; font-size: 12px; color: var(--text-3); }
+
+/* Trust band */
+.trust { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding: 32px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-top: 32px; }
+.trust-item .num { font-family: var(--f-display); font-size: 36px; font-weight: 600; }
+.trust-item .lbl { font-size: 12px; color: var(--text-3); letter-spacing: 0.06em; }
+@media (max-width: 700px) { .trust { grid-template-columns: 1fr 1fr; } }
+</style>
+</head>
+<body data-screen-label="Home">
+<script src="assets/icons.js"></script>
+<script src="assets/data.js"></script>
+<script>TVTheme.init();</script>
+<div id="nav"></div>
+<script>document.getElementById('nav').innerHTML = TVNav('home');</script>
+
+<main class="container">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-noise"></div>
+    <div class="hero-inner">
+      <div>
+        <span class="chip chip-glow hero-eyebrow"><span class="marquee-pulse"></span>Premiere · This week</span>
+        <h1>Mirage <em>Protocol.</em></h1>
+        <p class="hero-tag">Reality is a heist worth pulling. The new film from Tomás Rao — a sleight-of-hand thriller spanning four cities and one impossible night.</p>
+        <div class="hero-meta">
+          <span class="chip">IMAX 3D</span>
+          <span class="chip">Dolby Atmos</span>
+          <span class="chip">English · Tamil · Hindi</span>
+          <span class="chip chip-amber">⭐ 8.7 · 24K reviews</span>
+          <span class="chip">2h 28m · UA</span>
+        </div>
+        <div class="hero-cta">
+          <a class="btn btn-primary btn-lg" href="movie-detail.html">Book tickets</a>
+          <button class="btn btn-ghost btn-lg" id="trailerBtn">▶ Watch trailer</button>
+        </div>
+        <div class="hero-dots"><span class="on"></span><span></span><span></span></div>
+      </div>
+      <div class="hero-poster">
+        <span class="ptag">FEATURE PRESENTATION</span>
+        <div class="pname">Mirage<br>Protocol</div>
+      </div>
+      <div class="hero-arrows">
+        <button class="hero-arrow" id="prev">‹</button>
+        <button class="hero-arrow" id="next">›</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Category strip -->
+  <section class="cat-strip">
+    <a class="cat-card" href="movies.html">
+      <span class="cdot"></span>
+      <div><div class="cn">Movies</div><div class="cs">312 in cinemas</div></div>
+    </a>
+    <a class="cat-card" href="#">
+      <span class="cdot" style="background:var(--violet)"></span>
+      <div><div class="cn">Comedy</div><div class="cs">48 shows this week</div></div>
+    </a>
+    <a class="cat-card" href="#">
+      <span class="cdot" style="background:var(--neon-cyan)"></span>
+      <div><div class="cn">Concerts</div><div class="cs">12 marquee events</div></div>
+    </a>
+    <a class="cat-card" href="#">
+      <span class="cdot" style="background:var(--gold)"></span>
+      <div><div class="cn">Sports</div><div class="cs">IPL & more</div></div>
+    </a>
+    <a class="cat-card" href="#">
+      <span class="cdot" style="background:var(--emerald)"></span>
+      <div><div class="cn">Theatre</div><div class="cs">22 productions</div></div>
+    </a>
+    <a class="cat-card" href="#">
+      <span class="cdot" style="background:var(--indigo)"></span>
+      <div><div class="cn">Workshops</div><div class="cs">88 weekend slots</div></div>
+    </a>
+  </section>
+
+  <!-- Now Showing -->
+  <section style="margin-bottom:64px">
+    <div class="rail-head">
+      <div>
+        <span class="eyebrow">In cinemas now</span>
+        <h2>Now Showing</h2>
+      </div>
+      <a class="more" href="movies.html">View all 312 →</a>
+    </div>
+    <div class="rail-grid-6" id="ns-grid"></div>
+    <div class="rail" id="ns-rail"></div>
+  </section>
+
+  <!-- IPL Strip -->
+  <section class="ipl-strip">
+    <div>
+      <span class="ipl-tag">◆ IPL 2026 · Tata Indian Premier League</span>
+      <h3 style="margin-top:8px">The season is on. The tickets are live.</h3>
+      <p>Wankhede, Eden, Chinnaswamy and 7 more venues. Early access for TicketVerse Plus members.</p>
+      <div style="margin-top:18px"><a class="btn btn-primary" href="#">Book IPL tickets</a></div>
+    </div>
+    <div class="ipl-fixtures">
+      <div class="ipl-match"><div class="vs">MI vs CSK</div><div class="when">Apr 14 · 7:30 PM</div></div>
+      <div class="ipl-match"><div class="vs">RCB vs KKR</div><div class="when">Apr 16 · 7:30 PM</div></div>
+      <div class="ipl-match"><div class="vs">DC vs GT</div><div class="when">Apr 17 · 3:30 PM</div></div>
+    </div>
+  </section>
+
+  <!-- Coming Soon -->
+  <section style="margin-bottom:64px">
+    <div class="rail-head">
+      <div>
+        <span class="eyebrow">Coming soon</span>
+        <h2>Mark your calendar</h2>
+      </div>
+      <a class="more" href="#">Set reminders →</a>
+    </div>
+    <div class="rail" id="cs-rail"></div>
+  </section>
+
+  <!-- Live Events -->
+  <section style="margin-bottom:64px">
+    <div class="rail-head">
+      <div>
+        <span class="eyebrow">Live · This weekend</span>
+        <h2>Events &amp; Comedy</h2>
+      </div>
+      <a class="more" href="#">All events →</a>
+    </div>
+    <div class="rail-grid-6" id="evt-grid" style="grid-template-columns:repeat(4,1fr)"></div>
+    <div class="rail" id="evt-rail"></div>
+  </section>
+
+  <!-- Sports -->
+  <section style="margin-bottom:32px">
+    <div class="rail-head">
+      <div>
+        <span class="eyebrow">Sports</span>
+        <h2>Live the matchday</h2>
+      </div>
+      <a class="more" href="#">Fixtures →</a>
+    </div>
+    <div class="rail-grid-6" id="sp-grid" style="grid-template-columns:repeat(4,1fr)"></div>
+    <div class="rail" id="sp-rail"></div>
+  </section>
+
+  <section class="trust">
+    <div class="trust-item"><div class="num">4,200+</div><div class="lbl">screens nationwide</div></div>
+    <div class="trust-item"><div class="num">98%</div><div class="lbl">on-time entry</div></div>
+    <div class="trust-item"><div class="num">2.1M</div><div class="lbl">tickets booked monthly</div></div>
+    <div class="trust-item"><div class="num">4.8★</div><div class="lbl">average app rating</div></div>
+  </section>
+</main>
+
+<div id="footer"></div>
+<script>document.getElementById('footer').innerHTML = TVFooter();</script>
+<div id="bnav"></div>
+<script>document.getElementById('bnav').innerHTML = TVBottomNav('home');</script>
+
+<script>
+function poster(m) {
+  return `<a class="poster-card" href="movie-detail.html">
+    <div class="poster t-${m.tint}">
+      <div class="stripes"></div>
+      <div class="rank" style="font-size:32px;top:auto;bottom:14px;left:14px;right:14px;line-height:1">${m.t}</div>
+      <span class="chip chip-amber" style="position:absolute;top:10px;right:10px;backdrop-filter:blur(8px)">⭐ ${m.r}</span>
+      <div class="label">[ POSTER · ${m.id.toUpperCase()} ]</div>
+    </div>
+    <div class="poster-meta">
+      <p class="poster-title">${m.t}</p>
+      <p class="poster-sub">${m.s}</p>
+    </div>
+  </a>`;
+}
+function comingPoster(m) {
+  return `<a class="poster-card" href="#">
+    <div class="poster t-${m.tint}">
+      <div class="stripes"></div>
+      <span class="chip chip-violet" style="position:absolute;top:10px;left:10px;backdrop-filter:blur(8px)">Coming soon</span>
+      <div class="rank" style="font-size:30px;top:auto;bottom:14px;left:14px;right:14px;line-height:1">${m.t}</div>
+      <div class="label">[ POSTER · ${m.id.toUpperCase()} ]</div>
+    </div>
+    <div class="poster-meta">
+      <p class="poster-title">${m.t}</p>
+      <p class="poster-sub">${m.s}</p>
+    </div>
+  </a>`;
+}
+function evtCard(e) {
+  return `<a class="evt-card" href="#">
+    <div class="evt-img" style="background:linear-gradient(135deg,${tintBg(e.tint)})">
+      <div class="stripes"></div>
+      <span class="chip chip-glow tag">${e.tag}</span>
+    </div>
+    <div class="evt-meta">
+      <h4>${e.t}</h4>
+      <p>${e.s}</p>
+    </div>
+  </a>`;
+}
+function tintBg(n) {
+  const map = {1:'#2a1a3d,#4c1d95',2:'#3a0a14,#7f1d1d',3:'#0a2a3a,#155e75',4:'#2a2a0a,#713f12',5:'#0a3a2a,#064e3b',6:'#3a0a2a,#831843',7:'#1a1a3a,#1e3a8a',8:'#2a2a2a,#18181b'};
+  return map[n] || map[1];
+}
+document.getElementById('ns-grid').innerHTML = TVData.nowShowing.slice(0,6).map(poster).join('');
+document.getElementById('ns-rail').innerHTML = TVData.nowShowing.map(poster).join('');
+document.getElementById('cs-rail').innerHTML = TVData.comingSoon.map(comingPoster).join('');
+document.getElementById('evt-grid').innerHTML = TVData.events.map(evtCard).join('');
+document.getElementById('evt-rail').innerHTML = TVData.events.map(evtCard).join('');
+document.getElementById('sp-grid').innerHTML = TVData.sports.map(evtCard).join('');
+document.getElementById('sp-rail').innerHTML = TVData.sports.map(evtCard).join('');
+</script>
+</body>
+</html>

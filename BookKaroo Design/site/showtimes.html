@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TicketVerse — Showtimes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/tv.css" />
+<style>
+.show-head { padding: 28px 0 16px; display: flex; gap: 24px; align-items: center; }
+.show-head .mini-poster { width: 64px; aspect-ratio: 2/3; border-radius: 8px; flex-shrink: 0; }
+.show-head h1 { font-family: var(--f-display); font-size: clamp(28px, 4vw, 42px); margin: 0 0 4px; font-weight: 600; letter-spacing: -0.02em; }
+.show-head .meta { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+
+.date-strip {
+  display: flex; gap: 8px; padding: 16px 0;
+  overflow-x: auto; border-bottom: 1px solid var(--border);
+  position: sticky; top: var(--nav-h); background: var(--bg-1); z-index: 20;
+  margin-bottom: 24px;
+}
+.date {
+  flex-shrink: 0; min-width: 78px; padding: 12px 14px; border-radius: var(--r-3);
+  background: var(--surface); border: 1px solid var(--border);
+  text-align: center; cursor: pointer; transition: all .2s;
+}
+.date:hover { border-color: var(--border-2); }
+.date.on { background: var(--grad-violet); border-color: transparent; color: white; box-shadow: var(--sh-glow-violet); }
+.date .dn { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.8; }
+.date .dd { font-family: var(--f-display); font-size: 24px; font-weight: 600; line-height: 1; margin: 4px 0; }
+.date .dm { font-size: 11px; opacity: 0.8; }
+.date.on .dn, .date.on .dm { opacity: 1; }
+.date.fest::after {
+  content: '★'; display: block; font-size: 9px; margin-top: 2px; color: var(--gold);
+}
+
+.filt-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+.layout { display: grid; grid-template-columns: 1fr 320px; gap: 32px; padding-bottom: 80px; }
+@media (max-width: 1024px) { .layout { grid-template-columns: 1fr; } }
+
+.venue {
+  padding: 22px;
+  border-radius: var(--r-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  margin-bottom: 16px;
+  transition: border-color .2s;
+}
+.venue:hover { border-color: var(--border-2); }
+.venue-head { display: flex; align-items: start; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.venue h3 { font-family: var(--f-ui); font-weight: 600; font-size: 17px; margin: 0; }
+.venue .vmeta { font-size: 13px; color: var(--text-3); margin-top: 4px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.venue .vmeta b { color: var(--text-2); font-weight: 500; }
+.dot { width: 3px; height: 3px; border-radius: 999px; background: var(--text-4); display: inline-block; }
+
+.format-row { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.time-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px; margin-top: 12px;
+}
+.time {
+  padding: 10px 12px; border-radius: var(--r-2);
+  border: 1px solid var(--border-2);
+  background: var(--surface-2);
+  text-align: left; font-size: 13px; cursor: pointer;
+  transition: all .2s;
+  display: flex; flex-direction: column; gap: 4px;
+  position: relative;
+}
+.time:hover { background: var(--surface-3); transform: translateY(-1px); }
+.time .tm { font-weight: 600; font-size: 14px; }
+.time .av { font-size: 10px; letter-spacing: 0.05em; }
+.time .pr { font-size: 11px; color: var(--text-3); }
+.time-avail::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: 3px 0 0 3px; }
+.time.av-good::before { background: var(--emerald); }
+.time.av-fast::before { background: var(--amber); }
+.time.av-low::before { background: var(--crimson); }
+.time.av-sold { opacity: 0.5; cursor: not-allowed; }
+.time.av-sold::before { background: var(--text-4); }
+.time.av-good .av { color: #6EE7B7; }
+.time.av-fast .av { color: #FCD34D; }
+.time.av-low .av { color: #FF6770; }
+
+/* Selected time */
+.time.sel {
+  background: var(--grad-violet); border-color: transparent; color: white;
+  box-shadow: var(--sh-glow-violet);
+}
+.time.sel .pr, .time.sel .av { color: rgba(255,255,255,0.9); }
+
+/* legend */
+.legend { display: flex; gap: 14px; flex-wrap: wrap; padding: 14px 18px; border-radius: var(--r-3); background: var(--surface); border: 1px solid var(--border); margin-bottom: 18px; font-size: 12px; }
+.lg-item { display: flex; align-items: center; gap: 6px; color: var(--text-2); }
+.sw { width: 10px; height: 10px; border-radius: 3px; }
+
+/* Sticky aside summary */
+.aside { position: sticky; top: calc(var(--nav-h) + 16px); align-self: start; }
+.aside .summary { padding: 22px; border-radius: var(--r-4); background: var(--surface); border: 1px solid var(--border); }
+.summary h4 { margin: 0 0 14px; font-size: 14px; }
+.sum-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; color: var(--text-2); border-bottom: 1px dashed var(--border); }
+.sum-row b { color: var(--text-1); font-weight: 500; }
+.sum-row:last-of-type { border: 0; }
+.empty-state { color: var(--text-3); font-size: 13px; padding: 24px 0; text-align: center; }
+
+.show-icon { width: 28px; height: 28px; border-radius: 8px; background: var(--grad-violet); display: grid; place-items: center; color: white; font-size: 12px; flex-shrink: 0; }
+
+.feature-pill { font-size: 11px; padding: 3px 8px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border); color: var(--text-3); }
+</style>
+</head>
+<body data-screen-label="Showtimes">
+<script src="assets/icons.js"></script>
+<script>TVTheme.init();</script>
+<div id="nav"></div>
+<script>document.getElementById('nav').innerHTML = TVNav('movies');</script>
+
+<main class="container">
+  <section class="show-head">
+    <div class="poster mini-poster t-7">
+      <div class="stripes"></div>
+    </div>
+    <div>
+      <span class="eyebrow">Showtimes</span>
+      <h1>Mirage Protocol</h1>
+      <div class="meta">
+        <span class="chip chip-amber">⭐ 8.7</span>
+        <span class="chip">UA · 2h 28m</span>
+        <span class="chip">Sci-Fi · Thriller</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="date-strip" id="dates"></div>
+
+  <div class="filt-row">
+    <button class="chip chip-violet">Mumbai · Bandra ✕</button>
+    <button class="chip">All formats</button>
+    <button class="chip">English</button>
+    <button class="chip">Recliner</button>
+    <button class="chip">Atmos</button>
+    <button class="chip">After 6 PM</button>
+    <span style="margin-left:auto" class="dim" id="vcount">14 venues · 84 shows</span>
+  </div>
+
+  <div class="legend">
+    <span class="lg-item"><span class="sw" style="background:var(--emerald)"></span>Good availability</span>
+    <span class="lg-item"><span class="sw" style="background:var(--amber)"></span>Filling fast</span>
+    <span class="lg-item"><span class="sw" style="background:var(--crimson)"></span>Few left</span>
+    <span class="lg-item"><span class="sw" style="background:var(--text-4)"></span>Sold out</span>
+  </div>
+
+  <div class="layout">
+    <div id="venueList"></div>
+
+    <aside class="aside">
+      <div class="summary">
+        <h4>Your selection</h4>
+        <div id="selSummary">
+          <div class="empty-state">Tap a showtime to see availability and seat preview here.</div>
+        </div>
+        <div id="selActions" style="display:none;margin-top:14px;display:flex;flex-direction:column;gap:8px">
+          <a class="btn btn-primary" href="seats.html">Choose seats →</a>
+          <button class="btn btn-ghost btn-sm">Notify if cancelled</button>
+        </div>
+      </div>
+
+      <div class="summary" style="margin-top:16px">
+        <h4>Why TicketVerse</h4>
+        <ul style="margin:0;padding-left:18px;color:var(--text-2);font-size:13px;line-height:1.7">
+          <li>Reserved seats · No QR queues</li>
+          <li>Free reschedule up to 4h before</li>
+          <li>Atmos &amp; IMAX certified screens</li>
+          <li>Pay later with Plus</li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<div id="footer"></div>
+<script>document.getElementById('footer').innerHTML = TVFooter();</script>
+<div id="bnav"></div>
+<script>document.getElementById('bnav').innerHTML = TVBottomNav('movies');</script>
+
+<script>
+const days = ['Today','Sat','Sun','Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const dates = [9,10,11,12,13,14,15,16,17,18];
+const months = ['MAY','MAY','MAY','MAY','MAY','MAY','MAY','MAY','MAY','MAY'];
+document.getElementById('dates').innerHTML = days.map((d,i)=>`
+  <button class="date ${i===0?'on':''} ${i===2?'fest':''}">
+    <div class="dn">${d}</div>
+    <div class="dd">${dates[i]}</div>
+    <div class="dm">${months[i]}</div>
+  </button>
+`).join('');
+
+const venues = [
+  { n:'PVR ICON · Phoenix Marketcity', d:'Kurla West · 4.2 km', tags:['IMAX','Dolby Atmos','Recliner'], price:'₹420 onwards', distance:'4.2 km',
+    times: [
+      { t:'10:30 AM', av:'good', sub:'2D · 320 left', p:'₹220' },
+      { t:'1:45 PM', av:'fast', sub:'IMAX · Filling fast', p:'₹520' },
+      { t:'5:15 PM', av:'low', sub:'Atmos · 24 left', p:'₹420', sel:true },
+      { t:'8:30 PM', av:'good', sub:'IMAX · 180 left', p:'₹520' },
+      { t:'11:45 PM', av:'fast', sub:'2D · Filling fast', p:'₹260' },
+    ]
+  },
+  { n:'INOX Insignia · R City Mall', d:'Ghatkopar · 6.8 km', tags:['Insignia Recliner','Dolby Atmos'], price:'₹650 onwards', distance:'6.8 km',
+    times: [
+      { t:'11:00 AM', av:'good', sub:'Recliner · 88 left', p:'₹650' },
+      { t:'2:15 PM', av:'good', sub:'Recliner · 92 left', p:'₹650' },
+      { t:'6:00 PM', av:'fast', sub:'Recliner · 14 left', p:'₹720' },
+      { t:'9:15 PM', av:'sold', sub:'Sold out', p:'—' },
+    ]
+  },
+  { n:'Cinépolis · Viviana Mall', d:'Thane · 14.6 km', tags:['4DX','VIP','Atmos'], price:'₹380 onwards', distance:'14.6 km',
+    times: [
+      { t:'12:30 PM', av:'good', sub:'2D · 240 left', p:'₹260' },
+      { t:'3:45 PM', av:'good', sub:'4DX · 64 left', p:'₹780' },
+      { t:'7:00 PM', av:'fast', sub:'VIP · 8 left', p:'₹950' },
+      { t:'10:30 PM', av:'good', sub:'2D · 200 left', p:'₹220' },
+    ]
+  },
+  { n:'PVR Le Reve · Bandra West', d:'Bandra · 1.4 km · ★ Closest', tags:['Atmos','Recliner'], price:'₹350 onwards', distance:'1.4 km',
+    times: [
+      { t:'9:30 AM', av:'good', sub:'Atmos · 180 left', p:'₹350' },
+      { t:'12:45 PM', av:'fast', sub:'Recliner · 22 left', p:'₹650' },
+      { t:'4:00 PM', av:'low', sub:'Atmos · 8 left', p:'₹420' },
+      { t:'7:15 PM', av:'sold', sub:'Sold out', p:'—' },
+      { t:'10:30 PM', av:'good', sub:'2D · 160 left', p:'₹240' },
+    ]
+  },
+  { n:'Maison · BKC', d:'Bandra Kurla · 3.1 km · Boutique', tags:['Boutique','Bar','Atmos'], price:'₹1200 onwards', distance:'3.1 km',
+    times: [
+      { t:'5:30 PM', av:'fast', sub:'Lounge · 6 left', p:'₹1500' },
+      { t:'8:45 PM', av:'low', sub:'Lounge · 2 left', p:'₹1500' },
+    ]
+  },
+];
+
+document.getElementById('venueList').innerHTML = venues.map(v=>`
+  <div class="venue">
+    <div class="venue-head">
+      <div class="row" style="align-items:start;gap:12px">
+        <div class="show-icon">★</div>
+        <div>
+          <h3>${v.n}</h3>
+          <div class="vmeta">
+            <span><b>${v.distance}</b></span><span class="dot"></span>
+            <span>From <b>${v.price}</b></span><span class="dot"></span>
+            <span>Cancellation available</span>
+          </div>
+          <div class="format-row" style="margin-top:8px">
+            ${v.tags.map(t=>`<span class="feature-pill">${t}</span>`).join('')}
+          </div>
+        </div>
+      </div>
+      <div class="row" style="gap:6px"><button class="btn-link" style="font-size:12px">Info</button></div>
+    </div>
+    <div class="time-grid">
+      ${v.times.map(tm=>`
+        <button class="time time-avail av-${tm.av} ${tm.sel?'sel':''}" ${tm.av==='sold'?'disabled':''} onclick="selectTime(this, '${v.n.replace(/'/g,"\\'")}', '${tm.t}', '${tm.p}')">
+          <span class="tm">${tm.t}</span>
+          <span class="av">${tm.sub}</span>
+          <span class="pr">${tm.p}</span>
+        </button>
+      `).join('')}
+    </div>
+  </div>
+`).join('');
+
+function selectTime(el, venue, time, price) {
+  document.querySelectorAll('.time.sel').forEach(t => t.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById('selSummary').innerHTML = `
+    <div class="sum-row"><span>Movie</span><b>Mirage Protocol · IMAX</b></div>
+    <div class="sum-row"><span>Venue</span><b>${venue}</b></div>
+    <div class="sum-row"><span>Showtime</span><b>${time} · Today</b></div>
+    <div class="sum-row"><span>Starting price</span><b>${price}</b></div>
+    <div class="sum-row"><span>Hold</span><b>10:00 once selected</b></div>
+  `;
+  document.getElementById('selActions').style.display = 'flex';
+}
+
+// pre-select the one in markup
+document.addEventListener('DOMContentLoaded', () => {
+  const pre = document.querySelector('.time.sel');
+  if (pre) selectTime(pre, 'PVR ICON · Phoenix Marketcity', '5:15 PM', '₹420');
+});
+</script>
+</body>
+</html>

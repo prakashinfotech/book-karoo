@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="BookKaroo mark">
+  <defs>
+    <linearGradient id="bk-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0A0E1A"></stop>
+      <stop offset="100%" stop-color="#141B33"></stop>
+    </linearGradient>
+    <radialGradient id="bk-glow" cx="0.62" cy="0.5" r="0.62">
+      <stop offset="0%" stop-color="#7A48E8" stop-opacity="0.55"></stop>
+      <stop offset="55%" stop-color="#3B1E78" stop-opacity="0.18"></stop>
+      <stop offset="100%" stop-color="#0A0E1A" stop-opacity="0"></stop>
+    </radialGradient>
+    <linearGradient id="bk-red" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FB4FA7"></stop>
+      <stop offset="55%" stop-color="#E11D74"></stop>
+      <stop offset="100%" stop-color="#A4145E"></stop>
+    </linearGradient>
+    <linearGradient id="bk-bar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"></stop>
+      <stop offset="100%" stop-color="#E6E9F2"></stop>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="240" height="240" rx="56" fill="url(#bk-bg)"></rect>
+  <rect x="0" y="0" width="240" height="240" rx="56" fill="url(#bk-glow)"></rect>
+  <g>
+    <rect x="62" y="54" width="22" height="132" rx="4" fill="url(#bk-bar)"></rect>
+    <circle cx="73" cy="78" r="3" fill="#0A0E1A" opacity="0.85"></circle>
+    <circle cx="73" cy="120" r="3" fill="#0A0E1A" opacity="0.85"></circle>
+    <circle cx="73" cy="162" r="3" fill="#0A0E1A" opacity="0.85"></circle>
+    <path d="M92 56 L92 184 Q92 188 95 186 L188 124 Q193 120 188 116 L95 54 Q92 52 92 56 Z" fill="url(#bk-red)"></path>
+  </g>
+  <rect x="1" y="1" width="238" height="238" rx="55" fill="none" stroke="#FFFFFF" stroke-opacity="0.06"></rect>
+</svg>

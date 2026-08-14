@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TicketVerse — Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/tv.css" />
+<style>
+.ds-head { padding: 56px 0 32px; }
+.ds-head h1 { font-family: var(--f-display); font-size: clamp(40px, 6vw, 64px); font-weight: 600; letter-spacing: -0.025em; margin: 0 0 8px; }
+.ds-head h1 em { font-style: italic; background: var(--grad-violet); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.ds-head p { color: var(--text-2); max-width: 640px; font-size: 16px; margin: 0; }
+
+.ds-section { padding: 40px 0; border-top: 1px solid var(--border); }
+.ds-section h2 { font-family: var(--f-display); font-size: 28px; font-weight: 600; margin: 0 0 6px; letter-spacing: -0.02em; }
+.ds-section .sub { color: var(--text-3); font-size: 13px; margin: 0 0 24px; }
+
+.swatches { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+@media (max-width: 1000px) { .swatches { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 600px) { .swatches { grid-template-columns: repeat(2, 1fr); } }
+.swatch { padding: 14px; border-radius: var(--r-3); border: 1px solid var(--border); }
+.swatch .chip-block { aspect-ratio: 16/10; border-radius: var(--r-2); margin-bottom: 10px; }
+.swatch .nm { font-size: 13px; font-weight: 600; }
+.swatch .hx { font-family: var(--f-mono); font-size: 11px; color: var(--text-3); }
+
+.type-row { display: grid; grid-template-columns: 160px 1fr; gap: 24px; padding: 16px 0; border-bottom: 1px solid var(--border); align-items: baseline; }
+.type-row:last-child { border-bottom: 0; }
+.type-row .meta { font-family: var(--f-mono); font-size: 11px; color: var(--text-3); }
+.type-row .meta b { color: var(--text-1); display: block; font-family: var(--f-ui); font-weight: 500; font-size: 13px; margin-bottom: 4px; }
+.type-row .sample.display { font-family: var(--f-display); }
+
+.spacing-row { display: flex; gap: 18px; align-items: end; flex-wrap: wrap; }
+.sp { display: flex; flex-direction: column; align-items: center; gap: 8px; font-family: var(--f-mono); font-size: 10px; color: var(--text-3); }
+.sp .box { background: var(--grad-violet); border-radius: 4px; }
+
+.radii-row { display: flex; gap: 18px; flex-wrap: wrap; }
+.rad { width: 96px; height: 96px; background: var(--surface); border: 1px solid var(--border-2); display: grid; place-items: end; padding: 8px; font-family: var(--f-mono); font-size: 10px; color: var(--text-3); }
+
+.shad-row { display: flex; gap: 18px; flex-wrap: wrap; }
+.shad { width: 140px; height: 96px; background: var(--bg-3); border-radius: var(--r-3); display: grid; place-items: end; padding: 8px; font-family: var(--f-mono); font-size: 10px; color: var(--text-3); }
+
+.examples { display: grid; gap: 18px; }
+.box-demo { padding: 22px; border-radius: var(--r-3); background: var(--surface); border: 1px solid var(--border); }
+.box-demo h4 { margin: 0 0 12px; font-size: 12px; letter-spacing: 0.12em; color: var(--text-3); text-transform: uppercase; font-weight: 600; }
+.box-demo .row { gap: 10px; flex-wrap: wrap; }
+
+.cmp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 800px) { .cmp-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body data-screen-label="Design System">
+<script src="assets/icons.js"></script>
+<script>TVTheme.init();</script>
+<div id="nav"></div>
+<script>document.getElementById('nav').innerHTML = TVNav();</script>
+
+<main class="container">
+  <header class="ds-head">
+    <span class="eyebrow">Design system · v1.0 · May 2026</span>
+    <h1>Foundation for the <em>night out.</em></h1>
+    <p>Tokens, type, components, motion. Every surface in TicketVerse is built from this kit. Inter for UI, Playfair Display for marquee titles, oklch-aligned palette, glassmorphic depth.</p>
+    <div class="row" style="margin-top:18px;gap:8px">
+      <a class="btn btn-ghost" href="index.html">← Index</a>
+      <span class="chip">Dark + Light</span>
+      <span class="chip">WCAG AA</span>
+      <span class="chip">Mobile-first · 4 breakpoints</span>
+    </div>
+  </header>
+
+  <section class="ds-section">
+    <h2>Color · brand</h2>
+    <p class="sub">Crimson is for action and urgency. Violet → indigo for premium / Plus / IMAX. Neon cyan for live signals.</p>
+    <div class="swatches">
+      <div class="swatch"><div class="chip-block" style="background:#0A0E1A"></div><div class="nm">Bg / Charcoal</div><div class="hx">#0A0E1A</div></div>
+      <div class="swatch"><div class="chip-block" style="background:var(--grad-crimson)"></div><div class="nm">Crimson</div><div class="hx">#E11D74</div></div>
+      <div class="swatch"><div class="chip-block" style="background:var(--grad-violet)"></div><div class="nm">Indigo → Violet</div><div class="hx">#6366F1 → #A855F7</div></div>
+      <div class="swatch"><div class="chip-block" style="background:#22D3EE"></div><div class="nm">Neon Cyan</div><div class="hx">#22D3EE</div></div>
+      <div class="swatch"><div class="chip-block" style="background:#F5C56B"></div><div class="nm">Recliner Gold</div><div class="hx">#F5C56B</div></div>
+      <div class="swatch"><div class="chip-block" style="background:#34D399"></div><div class="nm">Emerald · ok</div><div class="hx">#34D399</div></div>
+    </div>
+    <div class="swatches" style="margin-top:12px">
+      <div class="swatch"><div class="chip-block" style="background:#F5F7FB;border:1px solid var(--border)"></div><div class="nm">Text · 1</div><div class="hx">#F5F7FB</div></div>
+      <div class="swatch"><div class="chip-block" style="background:#B8C0D4"></div><div class="nm">Text · 2</div><div class="hx">#B8C0D4</div></div>
+      <div class="swatch"><div class="chip-block" style="background:#7A8299"></div><div class="nm">Text · 3</div><div class="hx">#7A8299</div></div>
+      <div class="swatch"><div class="chip-block" style="background:rgba(255,255,255,0.04);border:1px solid var(--border-2)"></div><div class="nm">Surface</div><div class="hx">α 0.04</div></div>
+      <div class="swatch"><div class="chip-block" style="background:rgba(255,255,255,0.10);border:1px solid var(--border-2)"></div><div class="nm">Surface · 3</div><div class="hx">α 0.10</div></div>
+      <div class="swatch"><div class="chip-block" style="background:#FBBF24"></div><div class="nm">Amber · warn</div><div class="hx">#FBBF24</div></div>
+    </div>
+  </section>
+
+  <section class="ds-section">
+    <h2>Typography</h2>
+    <p class="sub">Inter for product UI · Playfair Display for film titles &amp; section heads · JetBrains Mono for IDs and labels.</p>
+    <div class="type-row"><div class="meta"><b>Display · 64</b>Playfair · 600 · -0.025em</div><div class="sample display" style="font-size:64px">Mirage Protocol</div></div>
+    <div class="type-row"><div class="meta"><b>H1 · 38</b>Playfair · 600</div><div class="sample display" style="font-size:38px">Saturday, 9 May.</div></div>
+    <div class="type-row"><div class="meta"><b>H2 · 28</b>Playfair · 600</div><div class="sample display" style="font-size:28px">Now Showing</div></div>
+    <div class="type-row"><div class="meta"><b>Body · 15</b>Inter · 400 · 1.5</div><div class="sample" style="font-size:15px">In a near-future where memory can be edited, a disgraced cognitive engineer is hired by a billionaire to steal back the one night that was erased from his life.</div></div>
+    <div class="type-row"><div class="meta"><b>Caption · 12</b>Inter · 500</div><div class="sample" style="font-size:12px;color:var(--text-3)">PVR Icon · Phoenix Marketcity, Kurla West · 4.2 km</div></div>
+    <div class="type-row"><div class="meta"><b>Eyebrow · 11</b>Inter · 600 · 0.18em tracking</div><div class="sample eyebrow">PREMIERE · THIS WEEK</div></div>
+    <div class="type-row"><div class="meta"><b>Mono · 12</b>JetBrains</div><div class="sample" style="font-family:var(--f-mono);font-size:12px;color:var(--text-2)">TV-MIR-04582 · Booking ID</div></div>
+  </section>
+
+  <section class="ds-section">
+    <h2>Spacing scale</h2>
+    <p class="sub">4-pt grid. Layout snaps to 8/16/24.</p>
+    <div class="spacing-row">
+      <div class="sp"><div class="box" style="width:4px;height:4px"></div>4</div>
+      <div class="sp"><div class="box" style="width:8px;height:8px"></div>8</div>
+      <div class="sp"><div class="box" style="width:12px;height:12px"></div>12</div>
+      <div class="sp"><div class="box" style="width:16px;height:16px"></div>16</div>
+      <div class="sp"><div class="box" style="width:20px;height:20px"></div>20</div>
+      <div class="sp"><div class="box" style="width:24px;height:24px"></div>24</div>
+      <div class="sp"><div class="box" style="width:32px;height:32px"></div>32</div>
+      <div class="sp"><div class="box" style="width:40px;height:40px"></div>40</div>
+      <div class="sp"><div class="box" style="width:56px;height:56px"></div>56</div>
+      <div class="sp"><div class="box" style="width:72px;height:72px"></div>72</div>
+    </div>
+  </section>
+
+  <section class="ds-section">
+    <h2>Radii &amp; shadows</h2>
+    <p class="sub">Soft, generous corners. Cards stay 16–24.</p>
+    <div class="radii-row">
+      <div class="rad" style="border-radius:8px">8</div>
+      <div class="rad" style="border-radius:12px">12</div>
+      <div class="rad" style="border-radius:16px">16</div>
+      <div class="rad" style="border-radius:20px">20</div>
+      <div class="rad" style="border-radius:24px">24</div>
+      <div class="rad" style="border-radius:999px;width:140px">pill</div>
+    </div>
+    <div class="shad-row" style="margin-top:24px">
+      <div class="shad" style="box-shadow:var(--sh-2)">sh-2 · default</div>
+      <div class="shad" style="box-shadow:var(--sh-3)">sh-3 · lifted</div>
+      <div class="shad" style="box-shadow:var(--sh-glow-violet)">violet glow</div>
+      <div class="shad" style="box-shadow:var(--sh-glow-crimson)">crimson glow</div>
+    </div>
+  </section>
+
+  <section class="ds-section">
+    <h2>Components</h2>
+    <p class="sub">Buttons, chips, fields, cards. All scaled for touch and mouse.</p>
+
+    <div class="cmp-grid">
+      <div class="box-demo">
+        <h4>Buttons</h4>
+        <div class="row" style="gap:10px;flex-wrap:wrap">
+          <button class="btn btn-primary">Book tickets</button>
+          <button class="btn btn-violet">Set reminder</button>
+          <button class="btn btn-ghost">Watch trailer</button>
+          <button class="btn btn-primary btn-lg">Pay ₹1,668</button>
+          <button class="btn btn-ghost btn-sm">Filter · 3</button>
+        </div>
+      </div>
+
+      <div class="box-demo">
+        <h4>Chips · status</h4>
+        <div class="row" style="gap:8px;flex-wrap:wrap">
+          <span class="chip">Default</span>
+          <span class="chip chip-violet">IMAX 3D</span>
+          <span class="chip chip-crimson">Few left</span>
+          <span class="chip chip-emerald">Available</span>
+          <span class="chip chip-amber">Filling fast</span>
+          <span class="chip chip-cyan">Atmos</span>
+          <span class="chip chip-glow">★ Plus</span>
+        </div>
+      </div>
+
+      <div class="box-demo">
+        <h4>Form fields</h4>
+        <div style="display:grid;gap:10px">
+          <input class="" placeholder="Default state" style="background:var(--bg-3);border:1px solid var(--border-2);color:var(--text-1);padding:12px 14px;border-radius:var(--r-2);font:inherit;font-size:14px;" />
+          <input value="Aarav Rastogi" style="background:var(--bg-3);border:1px solid var(--violet);color:var(--text-1);padding:12px 14px;border-radius:var(--r-2);font:inherit;font-size:14px;box-shadow:0 0 0 3px rgba(168,85,247,0.2)" />
+          <div style="background:var(--bg-3);border:1px solid rgba(225, 29, 116,0.5);padding:12px 14px;border-radius:var(--r-2);font-size:14px;color:#FF6770">Invalid email · re-enter</div>
+        </div>
+      </div>
+
+      <div class="box-demo">
+        <h4>Skeleton loaders</h4>
+        <div style="display:grid;gap:8px">
+          <div class="skel" style="height:14px;width:80%"></div>
+          <div class="skel" style="height:11px;width:55%"></div>
+          <div class="skel" style="height:120px;border-radius:var(--r-2)"></div>
+        </div>
+      </div>
+
+      <div class="box-demo">
+        <h4>Glass card</h4>
+        <div class="glass" style="padding:18px">
+          <div style="font-weight:600">Mirage Protocol</div>
+          <div class="dim" style="font-size:12px;margin-top:4px">Today · 5:15 PM · IMAX</div>
+        </div>
+      </div>
+
+      <div class="box-demo">
+        <h4>Theme switch</h4>
+        <div class="theme-switch">
+          <button data-theme-btn="dark" class="on" onclick="TVTheme.toggle('dark')">Dark</button>
+          <button data-theme-btn="light" onclick="TVTheme.toggle('light')">Light</button>
+        </div>
+        <p class="dim" style="font-size:12px;margin-top:10px">Try toggling. Every screen respects this.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="ds-section">
+    <h2>Breakpoints</h2>
+    <p class="sub">Mobile-first. Sidebar collapses below 1024. Bottom nav appears at 768.</p>
+    <div class="row" style="gap:14px;flex-wrap:wrap;font-family:var(--f-mono);font-size:12px;color:var(--text-2)">
+      <div class="chip" style="font-family:var(--f-mono)">360 · phone-s</div>
+      <div class="chip" style="font-family:var(--f-mono)">768 · phone-l / tablet</div>
+      <div class="chip" style="font-family:var(--f-mono)">1024 · laptop</div>
+      <div class="chip" style="font-family:var(--f-mono)">1440 · desktop</div>
+    </div>
+  </section>
+
+  <div style="height:80px"></div>
+</main>
+
+<div id="footer"></div>
+<script>document.getElementById('footer').innerHTML = TVFooter();</script>
+</body>
+</html>

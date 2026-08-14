@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TicketVerse — Design Index</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/tv.css" />
+<style>
+  body { background: var(--bg-0); }
+  .hub-hero {
+    position: relative;
+    padding: 80px 0 56px;
+    background: var(--grad-hero), var(--bg-0);
+  }
+  .hub-hero h1 { font-family: var(--f-display); font-size: clamp(40px, 7vw, 84px); font-weight: 600; letter-spacing: -0.03em; line-height: 0.98; margin: 0 0 24px; }
+  .hub-hero h1 em { font-style: italic; background: var(--grad-violet); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hub-hero p { max-width: 640px; font-size: 17px; color: var(--text-2); margin: 0 0 28px; line-height: 1.55; }
+  .hub-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .hub-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 16px 0 80px; }
+  @media (max-width: 900px) { .hub-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 600px) { .hub-grid { grid-template-columns: 1fr; } }
+  .hub-card {
+    position: relative; padding: 22px;
+    border-radius: var(--r-4);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    transition: transform .25s ease, border-color .25s, box-shadow .25s;
+    overflow: hidden;
+    min-height: 230px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .hub-card:hover { transform: translateY(-3px); border-color: var(--border-2); box-shadow: var(--sh-3); }
+  .hub-card .num { font-family: var(--f-mono); color: var(--text-4); font-size: 11px; letter-spacing: 0.16em; }
+  .hub-card h3 { font-family: var(--f-display); font-size: 24px; margin: 12px 0 6px; font-weight: 600; }
+  .hub-card p { color: var(--text-3); font-size: 13px; margin: 0; line-height: 1.5; }
+  .hub-card .ph {
+    position: absolute; right: -50px; top: -50px;
+    width: 220px; height: 220px; border-radius: 999px;
+    background: var(--grad-violet-soft);
+    filter: blur(40px);
+    opacity: 0.6;
+    pointer-events: none;
+  }
+  .hub-card .tag { position: absolute; top: 18px; right: 18px; }
+  .crumbs { font-family: var(--f-mono); font-size: 11px; color: var(--text-3); letter-spacing: 0.1em; }
+</style>
+</head>
+<body>
+<script src="assets/icons.js"></script>
+<script>TVTheme.init();</script>
+<div id="nav"></div>
+<script>document.getElementById('nav').innerHTML = TVNav('index');</script>
+
+<header class="hub-hero">
+  <div class="container">
+    <span class="crumbs">TICKETVERSE · DESIGN HANDOFF · v1.0</span>
+    <h1 style="margin-top:18px">A premium way to <em>book the night.</em></h1>
+    <p>Cinematic ticketing for movies, live events and sports. Below: the full UI, mobile-first, dark + light, all 9 surfaces and the underlying design system. Each tile opens a dedicated, responsive screen.</p>
+    <div class="row row-wrap" style="gap:10px">
+      <a class="btn btn-primary" href="home.html">Open Home</a>
+      <a class="btn btn-ghost" href="design-system.html">Design system</a>
+    </div>
+    <div class="hub-meta">
+      <span class="chip chip-violet">Dark + Light</span>
+      <span class="chip">Mobile-first · 360 / 768 / 1024 / 1440</span>
+      <span class="chip chip-emerald">WCAG AA</span>
+      <span class="chip chip-cyan">Glassmorphism</span>
+      <span class="chip">Inter + Playfair Display</span>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <div class="hub-grid">
+    <a class="hub-card" href="home.html">
+      <div class="ph"></div>
+      <span class="num">01 · DISCOVERY</span>
+      <div>
+        <h3>Home</h3>
+        <p>Hero carousel, Now Showing rail, Coming Soon, Live Events, Sports, IPL 2026 strip, footer.</p>
+      </div>
+      <span class="chip tag chip-glow">Landing</span>
+    </a>
+    <a class="hub-card" href="movies.html">
+      <div class="ph" style="background:radial-gradient(circle,rgba(225, 29, 116,.45),transparent)"></div>
+      <span class="num">02 · BROWSE</span>
+      <div>
+        <h3>Movies Listing</h3>
+        <p>Filter sidebar (language, genre, format), sortable grid, density toggle.</p>
+      </div>
+      <span class="chip tag">12 filters</span>
+    </a>
+    <a class="hub-card" href="movie-detail.html">
+      <div class="ph"></div>
+      <span class="num">03 · DETAIL</span>
+      <div>
+        <h3>Movie Detail</h3>
+        <p>Backdrop, poster, trailer, cast carousel, reviews, sticky CTA.</p>
+      </div>
+    </a>
+    <a class="hub-card" href="showtimes.html">
+      <div class="ph" style="background:radial-gradient(circle,rgba(34,211,238,.35),transparent)"></div>
+      <span class="num">04 · PICK A SHOW</span>
+      <div>
+        <h3>Showtimes</h3>
+        <p>Date tabs, venue cards, color-coded availability chips.</p>
+      </div>
+    </a>
+    <a class="hub-card" href="seats.html">
+      <div class="ph"></div>
+      <span class="num">05 · CHOOSE SEATS</span>
+      <div>
+        <h3>Seat Selection</h3>
+        <p>Curved screen indicator, three categories, live countdown ring.</p>
+      </div>
+      <span class="chip tag chip-amber">10:00 hold</span>
+    </a>
+    <a class="hub-card" href="checkout.html">
+      <div class="ph" style="background:radial-gradient(circle,rgba(225, 29, 116,.45),transparent)"></div>
+      <span class="num">06 · PAY</span>
+      <div>
+        <h3>Checkout</h3>
+        <p>Order summary, price breakdown, payment methods, promo.</p>
+      </div>
+    </a>
+    <a class="hub-card" href="confirmation.html">
+      <div class="ph" style="background:radial-gradient(circle,rgba(52,211,153,.35),transparent)"></div>
+      <span class="num">07 · YOU'RE IN</span>
+      <div>
+        <h3>Booking Confirmation</h3>
+        <p>QR code, ticket card, calendar / wallet downloads.</p>
+      </div>
+    </a>
+    <a class="hub-card" href="profile.html">
+      <div class="ph"></div>
+      <span class="num">08 · ACCOUNT</span>
+      <div>
+        <h3>Profile / My Bookings</h3>
+        <p>Tabs (Upcoming / Past / Cancelled), ticket cards, refunds.</p>
+      </div>
+    </a>
+    <a class="hub-card" href="admin.html">
+      <div class="ph" style="background:radial-gradient(circle,rgba(168,85,247,.4),transparent)"></div>
+      <span class="num">09 · OPS</span>
+      <div>
+        <h3>Admin Dashboard</h3>
+        <p>KPIs, occupancy charts, sales table, quick actions.</p>
+      </div>
+    </a>
+  </div>
+</main>
+
+<div id="footer"></div>
+<script>document.getElementById('footer').innerHTML = TVFooter();</script>
+
+</body>
+</html>
