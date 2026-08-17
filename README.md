@@ -107,10 +107,20 @@ BookKaroo/
 ## 🚀 Getting Started
 
 ### Prerequisites
+
+**Required**
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 - [Node.js 20+](https://nodejs.org/) & npm
-- A [Supabase](https://supabase.com) project (free tier works)
-- Razorpay sandbox account, Resend account, TMDB API key (optional for local dev — see below)
+- A [Supabase](https://supabase.com) project (free tier works) — provides `DATABASE_URL`
+
+**Optional** — each unlocks one feature; the app runs without them and degrades gracefully:
+
+| Service | Env var | Without it |
+|---|---|---|
+| [Groq](https://console.groq.com) | `GROQ_API_KEY` | AI chatbot replies with a canned fallback message |
+| [Resend](https://resend.com) | `RESEND_API_KEY` | Emails are skipped (logged, not sent) — booking still succeeds |
+| [Razorpay](https://razorpay.com) sandbox | `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` | Payments run through the built-in mock provider (`PAYMENT_PROVIDER=mock`, the default) |
+| [TMDB](https://www.themoviedb.org/settings/api) | `TMDB_BEARER` | Admin movie-metadata/poster sync is unavailable |
 
 ### 1. Clone
 ```bash
