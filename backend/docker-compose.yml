@@ -1,0 +1,45 @@
+# Backend only. From /backend: docker compose --env-file ../.env up -d --build
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bookkaroo-api
+    restart: unless-stopped
+    ports:
+      - "5000:10000"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      PORT: "10000"
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_ISSUER: ${JWT_ISSUER:-bookkaroo}
+      JWT_AUDIENCE: ${JWT_AUDIENCE:-bookkaroo-api}
+      JWT_ACCESS_TTL_MIN: ${JWT_ACCESS_TTL_MIN:-15}
+      JWT_REFRESH_TTL_DAYS: ${JWT_REFRESH_TTL_DAYS:-30}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      PAYMENT_PROVIDER: ${PAYMENT_PROVIDER:-mock}
+      RAZORPAY_KEY_ID: ${RAZORPAY_KEY_ID:-}
+      RAZORPAY_KEY_SECRET: ${RAZORPAY_KEY_SECRET:-}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      RESEND_FROM: ${RESEND_FROM:-}
+      TMDB_BEARER: ${TMDB_BEARER:-}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      CHATBOT_ENABLED: ${CHATBOT_ENABLED:-false}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      COMPANY_GSTIN: ${COMPANY_GSTIN:-}
+    volumes:
+      - api-logs:/app/logs
+    healthcheck:
+      # aspnet image has no curl/wget; probe /healthz over bash /dev/tcp
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/10000 && echo -e \"GET /healthz HTTP/1.0\r\n\r\n\" >&3 && head -1 <&3 | grep -q 200'"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  api-logs:

@@ -1,0 +1,17 @@
+# Frontend only. From /frontend: docker compose --env-file ../.env up -d --build
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:5000}
+        VITE_SUPABASE_URL: ${SUPABASE_URL}
+        VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
+        VITE_PAYMENT_PROVIDER: ${PAYMENT_PROVIDER:-mock}
+        VITE_RAZORPAY_KEY_ID: ${RAZORPAY_KEY_ID:-}
+        VITE_COMPANY_STATE_CODE: ${VITE_COMPANY_STATE_CODE:-24}
+    container_name: bookkaroo-web
+    restart: unless-stopped
+    ports:
+      - "3000:80"

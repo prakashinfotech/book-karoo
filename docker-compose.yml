@@ -1,0 +1,9 @@
+# Full stack. Usage: cp .env.docker.example .env && docker compose up -d --build
+# Requires Docker Compose v2.20+ (for `include`).
+include:
+  - path: ./backend/docker-compose.yml
+    project_directory: ./backend
+    env_file: ./.env
+  - path: ./frontend/docker-compose.yml
+    project_directory: ./frontend
+    env_file: ./.env
