@@ -1,9 +1,42 @@
-# Full stack. Usage: cp .env.docker.example .env && docker compose up -d --build
-# Requires Docker Compose v2.20+ (for `include`).
-include:
-  - path: ./backend/docker-compose.yml
-    project_directory: ./backend
-    env_file: ./.env
-  - path: ./frontend/docker-compose.yml
-    project_directory: ./frontend
-    env_file: ./.env
+services:
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: bookkaroo-backend
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:5000
+      FRONTEND_URLS: ${FRONTEND_URLS}
+    ports:
+      - "127.0.0.1:5021:5000"
+
+    networks:
+      - bookkaroo
+
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+    container_name: bookkaroo-frontend
+    restart: unless-stopped
+
+    ports:
+      - "127.0.0.1:3021:80"
+
+    networks:
+      - bookkaroo
+
+
+networks:
+  bookkaroo:
+    driver: bridge

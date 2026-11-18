@@ -1,30 +1,48 @@
-# ── Stage 1: Build ────────────────────────────────────────────────────────────
-FROM node:20-alpine AS build
+# ============================================================
+# Dependencies
+# ============================================================
+FROM node:20 AS deps
+
 WORKDIR /app
 
-COPY package.json package-lock.json .npmrc ./
-RUN npm ci
+COPY package*.json ./
 
+#RUN npm ci
+RUN npm install --include=optional
+
+# ============================================================
+# Build
+# ============================================================
+FROM node:20 AS build
+
+WORKDIR /app
+
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Vite inlines VITE_* at build time, so they must be passed as build args
-ARG VITE_API_URL
-ARG VITE_SUPABASE_URL
-ARG VITE_SUPABASE_ANON_KEY
-ARG VITE_PAYMENT_PROVIDER=mock
-ARG VITE_RAZORPAY_KEY_ID
-ARG VITE_COMPANY_STATE_CODE=24
-ENV VITE_API_URL=$VITE_API_URL \
-    VITE_SUPABASE_URL=$VITE_SUPABASE_URL \
-    VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY \
-    VITE_PAYMENT_PROVIDER=$VITE_PAYMENT_PROVIDER \
-    VITE_RAZORPAY_KEY_ID=$VITE_RAZORPAY_KEY_ID \
-    VITE_COMPANY_STATE_CODE=$VITE_COMPANY_STATE_CODE
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
 RUN npm run build
 
-# ── Stage 2: Serve ────────────────────────────────────────────────────────────
-FROM nginx:1.27-alpine AS runtime
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /app/dist /usr/share/nginx/html
-EXPOSE 80
+
+# ============================================================
+# Runtime
+# ============================================================
+FROM node:20-alpine AS runtime
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
+
+COPY --from=build /app/public ./public
+
+COPY --from=build /app/.next/standalone ./
+
+COPY --from=build /app/.next/static ./.next/static
+
+EXPOSE 3000
+
+CMD ["node", "server.js"]

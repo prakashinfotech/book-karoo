@@ -141,17 +141,21 @@ try
     // be combined with AllowCredentials() — so origins must be an explicit allowlist,
     // never a reflect-any-origin predicate, or any external site could ride a logged-in
     // user's cookie into authenticated cross-origin requests.
-    var corsAllowedOrigins = (builder.Configuration["CORS_ALLOWED_ORIGINS"] ?? "http://localhost:5173,http://localhost:3000")
-        .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+var frontendUrls = builder.Configuration["FRONTEND_URLS"]?
+    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+    ?? Array.Empty<string>();
 
-    builder.Services.AddCors(options =>
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
     {
-        options.AddDefaultPolicy(policy =>
-            policy.WithOrigins(corsAllowedOrigins)
-                  .AllowAnyHeader()
-                  .AllowAnyMethod()
-                  .AllowCredentials());
+        policy
+            .WithOrigins(frontendUrls)
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
+});
 
     // 8. Swagger with JWT
     builder.Services.AddEndpointsApiExplorer();
@@ -311,8 +315,8 @@ try
     // 17. CORS must run BEFORE exception handler so error responses include
     //     Access-Control-Allow-Origin headers — without this the browser blocks
     //     5xx responses and Axios sees them as network errors (no response object).
-    app.UseCors();
-
+    //app.UseCors();
+    app.UseCors("AllowFrontend");
     // 18. Global exception handler (after CORS so error responses have CORS headers)
     app.UseGlobalExceptionHandler();
 
